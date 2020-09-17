@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="popup.css" />
+	<title>Colab Autorun and Connect</title>
+</head>
+
+<body>
+	<p><strong>Colab Autorun and Connect</strong><br><br>
+		<a href="https://github.com/tdulcet/Colab-Autorun-and-Connect" target="_blank" class="button">ℹ Information</a>
+		<a href="https://www.tealdulcet.com/" target="_blank" class="button">♥ Donate</a></p>
+	<hr style="width: 100%" />
+	<p><a href="https://colab.research.google.com/#create=true" target="_blank" class="button">🆕 Open new Notebook</a>
+	</p>
+	<div class="no-data">
+		<p>⟳ Refresh page to show</p>
+	</div>
+	<div class="data hidden">
+		<p>
+			<label>
+				<input type="checkbox" id="enabled" checked disabled>
+				Enabled for this Notebook
+			</label>
+		</p>
+		<div id="table">
+			<p><strong>Status</strong>: <span id="status"></span></p>
+			<p id="time" class="hidden">
+				<strong>For</strong>:<br>
+				<span id="stopwatch"></span><br>
+				<span id="date"></span>
+			</p>
+		</div>
+	</div>
+	<script type="application/javascript" src="browser-polyfill.js"></script>
+	<script src="common.js"></script>
+	<script src="popup.js"></script>
+</body>
+
+</html>

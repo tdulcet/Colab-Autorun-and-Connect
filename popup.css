@@ -1,0 +1,14 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	width: max-content;
+}
+
+.hidden {
+	display: none;
+}
+
+a.button {
+	appearance: button;
+	text-decoration: none;
+	color: initial;
+}
