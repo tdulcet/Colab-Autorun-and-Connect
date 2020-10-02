@@ -9,7 +9,7 @@ let minutes = 1;
 // Display notifications
 let SEND = true;
 
-let notifications = new Map();
+const notifications = new Map();
 
 /**
  * On error.
@@ -25,10 +25,10 @@ browser.notifications.onClicked.addListener((notificationId) => {
 	const tabId = notifications.get(notificationId);
 
 	browser.tabs.query({}).then((tabs) => {
-		for (let tab of tabs) {
+		for (const tab of tabs) {
 			if (tab.id == tabId) {
-				browser.windows.update(tab.windowId, { focused: true });       //focus window
-				browser.tabs.update(tab.id, { active: true });       //focus tab
+				browser.windows.update(tab.windowId, { focused: true }); // focus window
+				browser.tabs.update(tab.id, { active: true }); // focus tab
 				break;
 			}
 		}
@@ -37,7 +37,7 @@ browser.notifications.onClicked.addListener((notificationId) => {
 
 browser.notifications.onClosed.addListener((notificationId) => {
 	notifications.delete(notificationId);
-})
+});
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	// console.log(message);
@@ -52,8 +52,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 			notifications.set(notificationId, sender.tab.id);
 			// browser.tabs.warmup(sender.tab.id);
 		});
-	}
-	else if (message.type === BACKGROUND) {
+	} else if (message.type === BACKGROUND) {
 		browser.pageAction.show(sender.tab.id);
 
 		const response = {

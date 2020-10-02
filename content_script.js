@@ -55,7 +55,7 @@ function notification(title, message, date) {
 		const response = {
 			"type": NOTIFICATION,
 			"title": title,
-			"message": message + "\n\nClick to view.",
+			"message": `${message}\n\nClick to view.`,
 			"eventTime": date
 		};
 		// console.log(response);
@@ -71,13 +71,13 @@ function notification(title, message, date) {
  * @returns {string}
  */
 function outputdate(date) {
-	return new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+	return new Date(date).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
 }
 
 /**
  * Click button by ID.
  *
- * @param {object} button
+ * @param {Object} button
  * @param {string} id
  * @param {string} text
  * @returns {void}
@@ -88,14 +88,15 @@ function click(button, id, text) {
 		button = document.getElementById(id);
 	}
 
-	if (button)
-		console.error("Error: " + text + " button clicked " + MAX + " times, but popup did not close.");
+	if (button) {
+		console.error(`Error: ${text} button clicked ${MAX} times, but popup did not close.`);
+	}
 }
 
 /**
  * Click button by selector.
  *
- * @param {object} button
+ * @param {Object} button
  * @param {string} selector
  * @param {string} text
  * @returns {void}
@@ -106,8 +107,9 @@ function aclick(button, selector, text) {
 		button = document.querySelector(selector);
 	}
 
-	if (button)
-		console.error("Error: " + text + " button clicked " + MAX + " times, but popup did not close.");
+	if (button) {
+		console.error(`Error: ${text} button clicked ${MAX} times, but popup did not close.`);
+	}
 }
 
 /**
@@ -116,39 +118,37 @@ function aclick(button, selector, text) {
  * @returns {void}
  */
 function connected() {
-	let button = document.getElementById("ok");
-	const title = document.title.substring(0, document.title.lastIndexOf(' - '));
+	const button = document.getElementById("ok");
+	const title = document.title.substring(0, document.title.lastIndexOf(" - "));
 
 	if (button) {
 		if (button.innerText.toLowerCase().includes("without")) {
-			console.log("Unable to connect with selected runtime, will retry in " + seconds + " seconds");
-			let abutton = document.querySelector("paper-button#cancel");
+			console.log(`Unable to connect with selected runtime, will retry in ${seconds} seconds`);
+			const abutton = document.querySelector("paper-button#cancel");
 			// console.log(button, abutton);
 
 			if (abutton) {
 				console.debug("Clicking button:", abutton.innerText, "Not clicking button:", button.innerText);
 				aclick(abutton, "paper-button#cancel", "Cancel");
-			}
-			else
+			} else {
 				console.error("Error: Cannot find cancel button");
-		}
-		else {
-			console.log("Unable to connect, will retry in " + seconds + " seconds");
+			}
+		} else {
+			console.log(`Unable to connect, will retry in ${seconds} seconds`);
 			// console.log(button);
 			console.debug("Clicking button:", button.innerText);
 			click(button, "ok", "OK");
 		}
 		if (running) {
-			notification("⏹ Notebook has " + (RUN ? "stopped" : "disconnected"), "The “" + title + "” notebook has been " + (RUN ? "stopped" : "disconnected") + " and we are unable to reconnect. It is likely over the usage limits. It had been " + (RUN ? "running" : "connected") + " since " + outputdate(time), now);
+			notification(`⏹ Notebook has ${RUN ? "stopped" : "disconnected"}`, `The “${title}” notebook has been ${RUN ? "stopped" : "disconnected"} and we are unable to reconnect. It is likely over the usage limits. It had been ${RUN ? "running" : "connected"} since ${outputdate(time)}`, now);
 			running = false;
 			time = now;
 		}
-	}
-	else {
-		if (running)
-			notification("🔁 Notebook has reconnected", "The “" + title + "” notebook has been reconnected! It had been " + (RUN ? "running" : "connected") + " since " + outputdate(time), now);
-		else {
-			notification("▶ Notebook is " + (RUN ? "running" : "connected"), "The “" + title + "” notebook is " + (RUN ? "running" : "connected") + "!" + (time ? " It had been " + (RUN ? "stopped" : "disconnected") + " since " + outputdate(time) : ""), now);
+	} else {
+		if (running) {
+			notification("🔁 Notebook has reconnected", `The “${title}” notebook has been reconnected! It had been ${RUN ? "running" : "connected"} since ${outputdate(time)}`, now);
+		} else {
+			notification(`▶ Notebook is ${RUN ? "running" : "connected"}`, `The “${title}” notebook is ${RUN ? "running" : "connected"}!${time ? ` It had been ${RUN ? "stopped" : "disconnected"} since ${outputdate(time)}` : ""}`, now);
 			running = true;
 		}
 		time = now;
@@ -164,17 +164,16 @@ function connected() {
  * @returns {void}
  */
 function check() {
-	let button = document.getElementById("ok");
+	const button = document.getElementById("ok");
 
 	if (button) {
-		let abutton = document.querySelector("paper-button#cancel");
+		const abutton = document.querySelector("paper-button#cancel");
 
 		if (abutton) {
 			// console.log(button, abutton);
 			console.warn("Warning: Cancel button found. Clicking button:", abutton.innerText, "Not clicking button:", button.innerText);
 			aclick(abutton, "paper-button#cancel", "Cancel");
-		}
-		else {
+		} else {
 			console.warn("Warning: OK button found. Clicking button:", button.innerText);
 			click(button, "ok", "OK");
 		}
@@ -189,11 +188,11 @@ function check() {
 function run() {
 	check();
 
-	let button = document.querySelector('colab-run-button');
+	const button = document.querySelector("colab-run-button");
 
 	if (button) {
-		button.dispatchEvent(new MouseEvent('mouseover', {
-			'bubbles': true
+		button.dispatchEvent(new MouseEvent("mouseover", {
+			"bubbles": true
 		}));
 		const title = button.title.toLowerCase();
 
@@ -206,14 +205,13 @@ function run() {
 
 			now = Date.now();
 			setTimeout(connected, 10000);
-		}
-		else {
-			console.log("Notebook already running, will recheck in " + seconds + " seconds");
+		} else {
+			console.log(`Notebook already running, will recheck in ${seconds} seconds`);
 			// running = true;
 		}
-	}
-	else
+	} else {
 		console.error("Error: Cannot find run button");
+	}
 }
 
 /**
@@ -224,10 +222,10 @@ function run() {
 function connect() {
 	check();
 
-	let button = document.querySelector("colab-connect-button");
+	const button = document.querySelector("colab-connect-button");
 
 	if (button) {
-		let abutton = button.shadowRoot.getElementById("connect");
+		const abutton = button.shadowRoot.getElementById("connect");
 		if (abutton.innerText.toLowerCase().includes("connect")) {
 			// console.log(button);
 			console.time(label);
@@ -237,14 +235,13 @@ function connect() {
 
 			now = Date.now();
 			setTimeout(connected, 10000);
-		}
-		else {
-			console.log("Notebook already connected, will recheck in " + seconds + " seconds");
+		} else {
+			console.log(`Notebook already connected, will recheck in ${seconds} seconds`);
 			// running = true;
 		}
-	}
-	else
+	} else {
 		console.error("Error: Cannot find connect button");
+	}
 }
 
 /**
@@ -271,9 +268,9 @@ function stop() {
 
 		enabled = false;
 		console.log("Colab Autorun and Connect stopped");
-	}
-	else
+	} else {
 		console.error("Error: Colab Autorun and Connect already stopped.");
+	}
 }
 
 /**
@@ -287,8 +284,7 @@ function astart() {
 			run();
 
 			intervalID = setInterval(run, seconds * 1000);
-		}
-		else {
+		} else {
 			connect();
 
 			intervalID = setInterval(connect, seconds * 1000);
@@ -308,9 +304,9 @@ function start() {
 		console.log("Colab Autorun and Connect started");
 
 		astart();
-	}
-	else
+	} else {
 		console.error("Error: Colab Autorun and Connect already started.");
+	}
 }
 
 /**
@@ -341,18 +337,20 @@ function handleError(error) {
 
 browser.runtime.sendMessage({ "type": BACKGROUND }).then(handleResponse, handleError);
 
-window.addEventListener('offline', (e) => {
-	console.log('Offline');
+window.addEventListener("offline", (e) => {
+	console.log("Offline");
 
-	if (enabled)
+	if (enabled) {
 		astop();
+	}
 });
 
-window.addEventListener('online', (e) => {
-	console.log('Online');
+window.addEventListener("online", (e) => {
+	console.log("Online");
 
-	if (enabled)
+	if (enabled) {
 		setTimeout(astart, 10000);
+	}
 });
 
 setTimeout(astart, 10000);

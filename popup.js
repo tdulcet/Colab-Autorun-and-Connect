@@ -1,9 +1,9 @@
 "use strict";
 
-const numberFormat1 = new Intl.NumberFormat(undefined, { style: 'unit', unit: 'day', unitDisplay: 'long' });
-const numberFormat2 = new Intl.NumberFormat(undefined, { style: 'unit', unit: 'hour', unitDisplay: 'long' });
-const numberFormat3 = new Intl.NumberFormat(undefined, { style: 'unit', unit: 'minute', unitDisplay: 'long' });
-const numberFormat4 = new Intl.NumberFormat(undefined, { style: 'unit', unit: 'second', unitDisplay: 'long' });
+const numberFormat1 = new Intl.NumberFormat(undefined, { style: "unit", unit: "day", unitDisplay: "long" });
+const numberFormat2 = new Intl.NumberFormat(undefined, { style: "unit", unit: "hour", unitDisplay: "long" });
+const numberFormat3 = new Intl.NumberFormat(undefined, { style: "unit", unit: "minute", unitDisplay: "long" });
+const numberFormat4 = new Intl.NumberFormat(undefined, { style: "unit", unit: "second", unitDisplay: "long" });
 
 // Automatically run the first cell
 let RUN = true;
@@ -14,7 +14,7 @@ let running = false;
 let tabId = null;
 let timeoutID = null;
 
-let stopwatch = document.getElementById("stopwatch");
+const stopwatch = document.getElementById("stopwatch");
 
 /**
  * Get seconds as digital clock.
@@ -28,19 +28,27 @@ function getSecondsAsDigitalClock(sec_num) {
 	const h = Math.floor((sec_num % 86400) / 3600);
 	const m = Math.floor((sec_num % 86400 % 3600) / 60);
 	const s = sec_num % 86400 % 3600 % 60;
-	let text = '';
+	let text = "";
 	if (d > 0)
+	{
 		// text += d.toLocaleString() + ' days ';
-		text += numberFormat1.format(d) + ' ';
+		text += `${numberFormat1.format(d)} `;
+	}
 	if (d > 0 || h > 0)
+	{
 		// text += ((h < 10) ? '0' + h : h) + ' hours ';
-		text += numberFormat2.format(h) + ' ';
+		text += `${numberFormat2.format(h)} `;
+	}
 	if (d > 0 || h > 0 || m > 0)
+	{
 		// text += ((m < 10) ? '0' + m : m) + ' minutes ';
-		text += numberFormat3.format(m) + ' ';
+		text += `${numberFormat3.format(m)} `;
+	}
 	if (d > 0 || h > 0 || m > 0 || s > 0)
+	{
 		// text += ((s < 10) ? '0' + s : s) + ' seconds';
 		text += numberFormat4.format(s);
+	}
 	return text;
 }
 
@@ -54,10 +62,12 @@ function getSecondsAsDigitalClock(sec_num) {
 function outputstopwatch(time, now) {
 	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
 	if (sec_num > 0)
-		// sec_num >= 3600 * 12
-		stopwatch.innerHTML = (running && sec_num >= 43200 ? '‼ ' : '') + getSecondsAsDigitalClock(sec_num);
-	else
-		stopwatch.innerHTML = '';
+	// sec_num >= 3600 * 12
+	{
+		stopwatch.innerHTML = (running && sec_num >= 43200 ? "‼ " : "") + getSecondsAsDigitalClock(sec_num);
+	} else {
+		stopwatch.innerHTML = "";
+	}
 }
 
 /**
@@ -72,8 +82,9 @@ function timerTick(time) {
 
 	timeoutID = setTimeout(() => {
 		outputstopwatch(time, now + delay);
-		if (time <= now)
+		if (time <= now) {
 			timerTick(time);
+		}
 	}, delay);
 }
 
@@ -96,8 +107,8 @@ function handleError(error) {
 function updatePopup(time) {
 	// console.log(running, time);
 
-	let status = document.getElementById("status");
-	status.innerHTML = time ? (running ? "▶ " + (RUN ? "Running" : "Connected") : "⏹ " + (RUN ? "Stopped" : "Disconnected")) : "❓ Unknown";
+	const status = document.getElementById("status");
+	status.innerHTML = time ? (running ? `▶ ${RUN ? "Running" : "Connected"}` : `⏹ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
 
 	if (time) {
 		const now = Date.now();
@@ -120,15 +131,15 @@ function updatePopup(time) {
  * @returns {void}
  */
 function getstatus() {
-	let status = document.getElementById("status");
+	const status = document.getElementById("status");
 	status.innerHTML = "Loading…";
 
 	browser.tabs.executeScript(tabId, {
-		code: `send();`
+		code: "send();"
 	}).catch(handleError);
 }
 
-document.getElementById("enabled").addEventListener('change', (event) => {
+document.getElementById("enabled").addEventListener("change", (event) => {
 	enabled = event.target.checked;
 
 	if (tabId) {
@@ -136,17 +147,16 @@ document.getElementById("enabled").addEventListener('change', (event) => {
 			document.getElementById("enabled").disabled = true;
 
 			browser.tabs.executeScript(tabId, {
-				code: `start();`
+				code: "start();"
 			}).catch(handleError);
 
-			let status = document.getElementById("status");
+			const status = document.getElementById("status");
 			status.innerHTML = "Waiting…";
 
 			document.getElementById("table").classList.remove("hidden");
-		}
-		else {
+		} else {
 			browser.tabs.executeScript(tabId, {
-				code: `stop();`
+				code: "stop();"
 			}).catch(handleError);
 
 			document.getElementById("table").classList.add("hidden");
@@ -162,7 +172,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 			enabled = message.enabled;
 			running = message.running;
 
-			let aenabled = document.getElementById("enabled");
+			const aenabled = document.getElementById("enabled");
 			aenabled.checked = enabled;
 			aenabled.disabled = false;
 
@@ -177,9 +187,9 @@ browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 		tabId = tabs[0].id;
 
 		if (tabId) {
-			let noData = document.querySelector(".no-data");
+			const noData = document.querySelector(".no-data");
 			noData.classList.add("hidden");
-			let entryTable = document.querySelector(".data");
+			const entryTable = document.querySelector(".data");
 			entryTable.classList.remove("hidden");
 
 			getstatus();
