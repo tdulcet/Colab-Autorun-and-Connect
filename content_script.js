@@ -14,6 +14,9 @@ let RUN = false;
 // Seconds to retry
 let seconds = 60;
 
+// Seconds to wait
+let wait = 10;
+
 // Display notifications
 let SEND = true;
 
@@ -122,8 +125,9 @@ function connected() {
 	const title = document.title.substring(0, document.title.lastIndexOf(" - "));
 
 	if (button) {
-		if (button.innerText.toLowerCase().includes("without")) {
-			console.log(`Unable to connect with selected runtime, will retry in ${seconds} seconds`);
+		const text = button.innerText.toLowerCase();
+		if (text.includes("without") || text.includes("manage")) {
+			console.log(`Unable to connect${text.includes("without") ? " with selected runtime" : ""}, will retry in ${seconds} seconds`);
 			const abutton = document.querySelector("paper-button#cancel");
 			// console.log(button, abutton);
 
@@ -204,7 +208,7 @@ function run() {
 			button.click();
 
 			now = Date.now();
-			setTimeout(connected, 10000);
+			setTimeout(connected, wait * 1000);
 		} else {
 			console.log(`Notebook already running, will recheck in ${seconds} seconds`);
 			// running = true;
@@ -234,7 +238,7 @@ function connect() {
 			button.click();
 
 			now = Date.now();
-			setTimeout(connected, 10000);
+			setTimeout(connected, wait * 1000);
 		} else {
 			console.log(`Notebook already connected, will recheck in ${seconds} seconds`);
 			// running = true;
@@ -320,6 +324,7 @@ function handleResponse(message, sender) {
 	if (message.type === BACKGROUND) {
 		RUN = message.RUN;
 		seconds = message.seconds;
+		wait = message.wait;
 		SEND = message.SEND;
 		// console.log(message);
 	}
@@ -349,9 +354,9 @@ window.addEventListener("online", (e) => {
 	console.log("Online");
 
 	if (enabled) {
-		setTimeout(astart, 10000);
+		setTimeout(astart, wait * 1000);
 	}
 });
 
-setTimeout(astart, 10000);
+setTimeout(astart, wait * 1000);
 console.log("Colab Autorun and Connect loaded");

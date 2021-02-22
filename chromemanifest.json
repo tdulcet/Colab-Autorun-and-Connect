@@ -44,6 +44,8 @@
     "storage",
     "tabs",
     "notifications",
+    "idle",
+    "alarms",
     "https://colab.research.google.com/*"
   ]
 }

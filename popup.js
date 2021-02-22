@@ -29,23 +29,19 @@ function getSecondsAsDigitalClock(sec_num) {
 	const m = Math.floor((sec_num % 86400 % 3600) / 60);
 	const s = sec_num % 86400 % 3600 % 60;
 	let text = "";
-	if (d > 0)
-	{
+	if (d > 0) {
 		// text += d.toLocaleString() + ' days ';
 		text += `${numberFormat1.format(d)} `;
 	}
-	if (d > 0 || h > 0)
-	{
+	if (d > 0 || h > 0) {
 		// text += ((h < 10) ? '0' + h : h) + ' hours ';
 		text += `${numberFormat2.format(h)} `;
 	}
-	if (d > 0 || h > 0 || m > 0)
-	{
+	if (d > 0 || h > 0 || m > 0) {
 		// text += ((m < 10) ? '0' + m : m) + ' minutes ';
 		text += `${numberFormat3.format(m)} `;
 	}
-	if (d > 0 || h > 0 || m > 0 || s > 0)
-	{
+	if (d > 0 || h > 0 || m > 0 || s > 0) {
 		// text += ((s < 10) ? '0' + s : s) + ' seconds';
 		text += numberFormat4.format(s);
 	}

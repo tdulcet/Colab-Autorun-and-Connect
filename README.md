@@ -11,6 +11,7 @@ Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and
 * Automatically reconnects to notebooks
 * Optionally automatically runs the first cell
 * Desktop notifications when the notebooks change state
+* Optionally rotate through Colab tabs when the system is idle or locked \*
 * Page action popup with the notebooks status and a stopwatch
 * Detailed information output to the console
 
@@ -19,6 +20,8 @@ Please visit [tealdulcet.com](https://www.tealdulcet.com/) to support this exten
 🔜 This will soon be published to Addons.mozilla.org (AMO) and possibly the Chrome Web Store.
 
 Use on Chromium/Chrome requires the downloading the [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) and renaming the [chromemanifest.json](chromemanifest.json) file to `manifest.json`.
+
+\* Tab rotate does not currently work well with Firefox on Windows because of [Bug 1615885](https://bugzilla.mozilla.org/show_bug.cgi?id=1615885).
 
 ## Other Colab Extensions
 
@@ -31,6 +34,7 @@ Use on Chromium/Chrome requires the downloading the [webextension-polyfill](http
 Pull requests welcome! Ideas for contributions:
 
 * Add an [options page](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages)
+* Add option to run all cells, not just the first
 * Workaround the issue with Colab popups hanging
 * Improve the performance
 
