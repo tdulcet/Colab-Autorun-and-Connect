@@ -14,8 +14,11 @@ Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and
 * Optionally rotate through Colab tabs when the system is idle or locked \*
 * Page action popup with the notebooks status and a stopwatch
 * Detailed information output to the console
+* Settings automatically synced between all browser instances and devices
+* Follows the [Firefox Photon Design](https://design.firefox.com/photon)
+* Compatible with Firefox for Android
 
-Please visit [tealdulcet.com](https://www.tealdulcet.com/) to support this extension and my other software development.
+❤️ Please visit [tealdulcet.com](https://www.tealdulcet.com/) to support this extension and my other software development.
 
 🔜 This will soon be published to Addons.mozilla.org (AMO) and possibly the Chrome Web Store.
 
@@ -33,7 +36,6 @@ Use on Chromium/Chrome requires the downloading the [webextension-polyfill](http
 
 Pull requests welcome! Ideas for contributions:
 
-* Add an [options page](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages)
 * Add option to run all cells, not just the first
 * Workaround the issue with Colab popups hanging
 * Improve the performance

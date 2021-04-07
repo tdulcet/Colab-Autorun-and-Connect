@@ -1,8 +1,8 @@
 "use strict";
 
 // communication type
+const POPUP = "popup";
 const CONTENT = "content";
-const BACKGROUND = "background";
 const NOTIFICATION = "notification";
 
 const label = "Colab Autorun and Connect";
@@ -16,9 +16,6 @@ let seconds = 60;
 
 // Seconds to wait
 let wait = 10;
-
-// Display notifications
-let SEND = true;
 
 let enabled = true;
 let running = false;
@@ -34,7 +31,7 @@ let intervalID = null;
  */
 function send() {
 	const response = {
-		"type": CONTENT,
+		"type": POPUP,
 		"RUN": RUN,
 		"enabled": enabled,
 		"running": running,
@@ -54,17 +51,15 @@ function send() {
  * @returns {void}
  */
 function notification(title, message, date) {
-	if (SEND) {
-		const response = {
-			"type": NOTIFICATION,
-			"title": title,
-			"message": `${message}\n\nClick to view.`,
-			"eventTime": date
-		};
-		// console.log(response);
+	const response = {
+		"type": NOTIFICATION,
+		"title": title,
+		"message": `${message}\n\nClick to view.`,
+		"eventTime": date
+	};
+	// console.log(response);
 
-		browser.runtime.sendMessage(response);
-	}
+	browser.runtime.sendMessage(response);
 }
 
 /**
@@ -144,7 +139,7 @@ function connected() {
 			click(button, "ok", "OK");
 		}
 		if (running) {
-			notification(`⏹ Notebook has ${RUN ? "stopped" : "disconnected"}`, `The “${title}” notebook has been ${RUN ? "stopped" : "disconnected"} and we are unable to reconnect. It is likely over the usage limits. It had been ${RUN ? "running" : "connected"} since ${outputdate(time)}`, now);
+			notification(`⏹️ Notebook has ${RUN ? "stopped" : "disconnected"}`, `The “${title}” notebook has been ${RUN ? "stopped" : "disconnected"} and we are unable to reconnect. It is likely over the usage limits. It had been ${RUN ? "running" : "connected"} since ${outputdate(time)}`, now);
 			running = false;
 			time = now;
 		}
@@ -152,7 +147,7 @@ function connected() {
 		if (running) {
 			notification("🔁 Notebook has reconnected", `The “${title}” notebook has been reconnected! It had been ${RUN ? "running" : "connected"} since ${outputdate(time)}`, now);
 		} else {
-			notification(`▶ Notebook is ${RUN ? "running" : "connected"}`, `The “${title}” notebook is ${RUN ? "running" : "connected"}!${time ? ` It had been ${RUN ? "stopped" : "disconnected"} since ${outputdate(time)}` : ""}`, now);
+			notification(`▶️ Notebook is ${RUN ? "running" : "connected"}`, `The “${title}” notebook is ${RUN ? "running" : "connected"}!${time ? ` It had been ${RUN ? "stopped" : "disconnected"} since ${outputdate(time)}` : ""}`, now);
 			running = true;
 		}
 		time = now;
@@ -321,12 +316,14 @@ function start() {
  * @returns {void}
  */
 function handleResponse(message, sender) {
-	if (message.type === BACKGROUND) {
+	if (message.type === CONTENT) {
 		RUN = message.RUN;
 		seconds = message.seconds;
 		wait = message.wait;
-		SEND = message.SEND;
 		// console.log(message);
+
+		astop();
+		setTimeout(astart, wait * 1000);
 	}
 }
 
@@ -340,7 +337,8 @@ function handleError(error) {
 	console.error(`Error: ${error}`);
 }
 
-browser.runtime.sendMessage({ "type": BACKGROUND }).then(handleResponse, handleError);
+browser.runtime.sendMessage({ "type": CONTENT }).then(handleResponse, handleError);
+browser.runtime.onMessage.addListener(handleResponse);
 
 window.addEventListener("offline", (e) => {
 	console.log("Offline");
@@ -358,5 +356,4 @@ window.addEventListener("online", (e) => {
 	}
 });
 
-setTimeout(astart, wait * 1000);
 console.log("Colab Autorun and Connect loaded");

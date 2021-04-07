@@ -18,12 +18,13 @@
     "default_title": "Colab Autorun and Connect",
     "default_popup": "popup.html"
   },
+  "options_ui": {
+    "page": "options/options.html",
+    "browser_style": true,
+    "chrome_style": true
+  },
   "background": {
-    "scripts": [
-      "browser-polyfill.js",
-      "common.js",
-      "background.js"
-    ]
+    "page": "background.html"
   },
   "content_scripts": [
     {

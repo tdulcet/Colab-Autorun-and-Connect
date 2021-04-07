@@ -1,13 +1,5 @@
 @import "/common/modules/AutomaticSettings/css/photonOptions.css";
 
-body {
-	width: max-content;
-}
-
-.hidden {
-	display: none;
-}
-
 a.button {
 	appearance: button;
 	text-decoration: none;

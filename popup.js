@@ -57,10 +57,8 @@ function getSecondsAsDigitalClock(sec_num) {
  */
 function outputstopwatch(time, now) {
 	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
-	if (sec_num > 0)
-	// sec_num >= 3600 * 12
-	{
-		stopwatch.innerHTML = (running && sec_num >= 43200 ? "‼ " : "") + getSecondsAsDigitalClock(sec_num);
+	if (sec_num > 0) {
+		stopwatch.innerHTML = (running && sec_num >= 3600 * 12 ? "‼ " : "") + getSecondsAsDigitalClock(sec_num);
 	} else {
 		stopwatch.innerHTML = "";
 	}
@@ -104,7 +102,7 @@ function updatePopup(time) {
 	// console.log(running, time);
 
 	const status = document.getElementById("status");
-	status.innerHTML = time ? (running ? `▶ ${RUN ? "Running" : "Connected"}` : `⏹ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
+	status.innerHTML = time ? (running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
 
 	if (time) {
 		const now = Date.now();
@@ -163,7 +161,7 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	if (sender.tab.id === tabId) {
-		if (message.type === CONTENT) {
+		if (message.type === POPUP) {
 			RUN = message.RUN;
 			enabled = message.enabled;
 			running = message.running;

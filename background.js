@@ -1,5 +1,7 @@
 "use strict";
 
+import * as AddonSettings from "/common/modules/AddonSettings/AddonSettings.js";
+
 const ALARM = "rotate";
 
 // Automatically run the first cell
@@ -82,7 +84,7 @@ async function rotate() {
 
 	const tab = result.value;
 	// console.log(new Date(), "switching to", tab.id, tab);
-	
+
 	if (browser.tabs.warmup) {
 		browser.tabs.warmup(tab.id);
 	}
@@ -145,7 +147,7 @@ function newState(state) {
 				browser.alarms.clear(ALARM);
 
 				iterator = null;
-				
+
 				if (browser.tabs.warmup) {
 					browser.tabs.warmup(atab.id);
 				}
@@ -200,38 +202,92 @@ function handleAlarm(alarmInfo) {
 
 browser.alarms.onAlarm.addListener(handleAlarm);
 
+/**
+ * Set settings.
+ *
+ * @param {Object} settings
+ * @returns {void}
+ */
+function setSettings(settings) {
+	RUN = settings.run;
+	minutes = settings.minutes;
+	wait = settings.wait;
+	ROTATE = settings.rotate;
+	idle = settings.idle;
+	period = settings.period;
+	SEND = settings.send;
+
+	browser.idle.setDetectionInterval(idle);
+}
+
+/**
+ * Send settings to content scripts.
+ *
+ * @param {Object} settings
+ * @returns {void}
+ */
+function sendSettings(settings) {
+	setSettings(settings);
+
+	for (const tab of tabs.values()) {
+		browser.tabs.sendMessage(
+			tab.id,
+			{
+				"type": CONTENT,
+				"RUN": RUN,
+				"seconds": minutes * 60,
+				"wait": wait
+			}
+		).catch(onError);
+	}
+}
+
+/**
+ * Init.
+ *
+ * @returns {void}
+ */
+async function init() {
+	const settings = await AddonSettings.get("settings");
+
+	setSettings(settings);
+}
+
+init();
+
 browser.runtime.onMessage.addListener((message, sender) => {
 	// console.log(message);
 	if (message.type === NOTIFICATION) {
 		console.log(message.title, message.message, new Date(message.eventTime));
-		browser.notifications.create({
-			"type": "basic",
-			"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
-			"title": message.title,
-			"message": message.message,
-			"eventTime": message.eventTime
-		}).then((notificationId) => {
-			notifications.set(notificationId, sender.tab.id);
-			if (browser.tabs.warmup) {
-				browser.tabs.warmup(sender.tab.id);
-			}
-		});
-	} else if (message.type === BACKGROUND) {
+		if (SEND) {
+			browser.notifications.create({
+				"type": "basic",
+				"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
+				"title": message.title,
+				"message": message.message,
+				"eventTime": message.eventTime
+			}).then((notificationId) => {
+				notifications.set(notificationId, sender.tab.id);
+				if (browser.tabs.warmup) {
+					browser.tabs.warmup(sender.tab.id);
+				}
+			});
+		}
+	} else if (message.type === CONTENT) {
 		browser.pageAction.show(sender.tab.id);
 
 		tabs.set(sender.tab.id, sender.tab);
 		iterator = null;
 
 		const response = {
-			"type": BACKGROUND,
+			"type": CONTENT,
 			"RUN": RUN,
 			"seconds": minutes * 60,
-			"wait": wait,
-			"SEND": SEND
+			"wait": wait
 		};
 		// console.log(response);
 		return Promise.resolve(response);
+	} else if (message.type === BACKGROUND) {
+		sendSettings(message.optionValue);
 	}
 });
-
-browser.idle.setDetectionInterval(idle);

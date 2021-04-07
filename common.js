@@ -1,6 +1,7 @@
 "use strict";
 
 // communication type
+const POPUP = "popup";
 const CONTENT = "content";
 const BACKGROUND = "background";
 const NOTIFICATION = "notification";

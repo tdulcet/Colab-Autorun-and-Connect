@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/common/common.css">
+	<link rel="stylesheet" href="options.css">
+
+	<script type="application/javascript" src="../browser-polyfill.js"></script>
+
+	<!-- <script defer src="../common/common.js" type="module"></script> -->
+	<script defer src="./options.js" type="module"></script>
+</head>
+
+<body>
+	<div class="message-container">
+		<div id="messageTips" aria-label="info message" class="message-box info invisible fade-hide">
+			<span class="message-text"></span>
+			<a href="#">
+				<button type="button" class="message-action-button micro-button info invisible"></button>
+			</a>
+			<img class="icon-dismiss invisible" src="/common/img/close.svg" width="24" height="24" tabindex="0"></span>
+		</div>
+		<div id="messageInfo" aria-label="info message" class="message-box info invisible fade-hide">
+			<span class="message-text">Some settings are managed by your administrator and cannot be changed.</span>
+			<a href="#">
+				<button type="button" class="message-action-button micro-button info invisible"></button>
+			</a>
+			<img class="icon-dismiss invisible" src="/common/img/close.svg" width="24" height="24" tabindex="0"></span>
+		</div>
+		<div id="messageSuccess" aria-label="success message" class="message-box success invisible fade-hide">
+			<span class="message-text">That worked!</span>
+			<a href="#">
+				<button type="button" class="message-action-button micro-button success invisible"></button>
+			</a>
+			<img class="icon-dismiss invisible" src="/common/img/close.svg" width="24" height="24" tabindex="0"></span>
+		</div>
+		<div id="messageError" aria-label="error message" class="message-box error invisible fade-hide">
+			<span class="message-text">An error happened.</span>
+			<a href="#">
+				<button type="button" class="message-action-button micro-button error invisible"></button>
+			</a>
+			<img class="icon-dismiss invisible" src="/common/img/close-white.svg" width="24" height="24"
+				tabindex="0"></span>
+		</div>
+		<div id="messageWarning" aria-label="warning message" class="message-box warning invisible fade-hide">
+			<span class="message-text">There were some difficulties.</span>
+			<a href="#">
+				<button type="button" class="message-action-button micro-button warning invisible"></button>
+			</a>
+			<img class="icon-dismiss invisible" src="/common/img/close.svg" width="24" height="24" tabindex="0"></span>
+		</div>
+	</div>
+	<form>
+		<section>
+			<ul>
+				<h3><strong>Colab Autorun and Connect</strong></h3>
+				<p><a href="https://github.com/tdulcet/Colab-Autorun-and-Connect" target="_blank" class="button">ℹ️
+						Information</a>
+					<a href="https://www.tealdulcet.com/" target="_blank" class="button">❤️ Donate</a>
+				</p>
+
+				<li>
+					<div class="line">
+						<input class="setting save-on-change" type="checkbox" id="run" data-optiongroup="settings" name="run">
+						<label for="run">Automatically run the first cell</label>
+					</div>
+				</li>
+
+				<li>
+					<div class="line">
+						<label for="minutes">Minutes to retry</label>
+						<input class="setting save-on-change" type="number" id="minutes" data-optiongroup="settings" name="minutes" min="1" required>
+					</div>
+					<span class="line indent helper-text">How long to wait before attempting to connect again.</span>
+				</li>
+
+				<li>
+					<div class="line">
+						<label for="wait">Seconds to wait</label>
+						<input class="setting save-on-change" type="number" id="wait" data-optiongroup="settings" name="wait" min="10" required>
+					</div>
+					<span class="line indent helper-text">How long to wait after attempting to connect to check if it
+						actually connected. Additionally, how long to wait after loading a notebook or regaining network
+						connectivity before attempting to connect again. 🐌 Note: Slower devices may need a longer
+						time.</span>
+				</li>
+
+				<li>
+					<div class="line">
+						<input class="setting save-on-change" type="checkbox" id="rotate" data-optiongroup="settings" name="rotate">
+						<label for="rotate">Rotate through Colab tabs when the system is idle or locked</label>
+					</div>
+					<span class="line indent helper-text">Helps to prevent Colab popups from hanging after attempting to
+						connect.</span>
+					<ul>
+						<li>
+							<div class="line">
+								<label for="idle">Idle time</label>
+								<input class="setting save-on-change" type="number" id="idle" data-optiongroup="settings" name="idle" min="15" required>
+								seconds
+							</div>
+							<span class="line indent helper-text">Amount of idle time to wait before rotating.</span>
+						</li>
+
+						<li>
+							<div class="line">
+								<label for="period">Period to show each tab</label>
+								<input class="setting save-on-change" type="number" id="period" data-optiongroup="settings" name="period" min="1" required>
+								minutes
+							</div>
+						</li>
+					</ul>
+				</li>
+
+				<li>
+					<div class="line">
+						<input class="setting save-on-change" type="checkbox" id="send" data-optiongroup="settings" name="send">
+						<label for="send">Display Desktop notifications</label>
+					</div>
+				</li>
+			</ul>
+		</section>
+
+		<div>
+			<hr /><br />
+			<button type="button" id="resetButton">Reset all settings to defaults</button>
+		</div>
+	</form>
+</body>
+
+</html>
