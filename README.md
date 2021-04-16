@@ -14,6 +14,7 @@ Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and
 * Optionally rotate through Colab tabs when the system is idle or locked \*
 * Page action popup with the notebooks status and a stopwatch
 * Detailed information output to the console
+* Supports the light/dark mode of your system automatically
 * Settings automatically synced between all browser instances and devices
 * Follows the [Firefox Photon Design](https://design.firefox.com/photon)
 * Compatible with Firefox for Android

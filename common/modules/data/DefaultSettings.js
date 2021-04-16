@@ -16,6 +16,7 @@ const defaultSettings = {
 		run: false,
 		minutes: 1,
 		wait: 10, // Seconds
+		delay: 30, // Seconds
 		rotate: false,
 		idle: 10 * 60, // Seconds
 		period: 1, // Minutes

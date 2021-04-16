@@ -58,7 +58,7 @@ function getSecondsAsDigitalClock(sec_num) {
 function outputstopwatch(time, now) {
 	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
 	if (sec_num > 0) {
-		stopwatch.innerHTML = (running && sec_num >= 3600 * 12 ? "‼ " : "") + getSecondsAsDigitalClock(sec_num);
+		stopwatch.innerHTML = (running && sec_num >= 3600 * 12 ? "‼️ " : "") + getSecondsAsDigitalClock(sec_num);
 	} else {
 		stopwatch.innerHTML = "";
 	}
@@ -133,12 +133,20 @@ function getstatus() {
 	}).catch(handleError);
 }
 
+document.getElementById("settings").addEventListener("click", (event) => {
+	event.target.disabled = true;
+
+	browser.runtime.openOptionsPage().finally(() => {
+		event.target.disabled = false;
+	});
+});
+
 document.getElementById("enabled").addEventListener("change", (event) => {
 	enabled = event.target.checked;
 
 	if (tabId) {
 		if (enabled) {
-			document.getElementById("enabled").disabled = true;
+			event.target.disabled = true;
 
 			browser.tabs.executeScript(tabId, {
 				code: "start();"

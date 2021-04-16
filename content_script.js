@@ -14,6 +14,9 @@ let RUN = false;
 // Seconds to retry
 let seconds = 60;
 
+// Delay in seconds
+let delay = 30;
+
 // Seconds to wait
 let wait = 10;
 
@@ -121,7 +124,7 @@ function connected() {
 
 	if (button) {
 		const text = button.innerText.toLowerCase();
-		if (text.includes("without") || text.includes("manage")) {
+		if (text.includes("connect") || text.includes("without") || text.includes("manage")) {
 			console.log(`Unable to connect${text.includes("without") ? " with selected runtime" : ""}, will retry in ${seconds} seconds`);
 			const abutton = document.querySelector("paper-button#cancel");
 			// console.log(button, abutton);
@@ -320,10 +323,11 @@ function handleResponse(message, sender) {
 		RUN = message.RUN;
 		seconds = message.seconds;
 		wait = message.wait;
+		delay = message.delay;
 		// console.log(message);
 
 		astop();
-		setTimeout(astart, wait * 1000);
+		setTimeout(astart, delay * 1000);
 	}
 }
 
@@ -352,7 +356,7 @@ window.addEventListener("online", (e) => {
 	console.log("Online");
 
 	if (enabled) {
-		setTimeout(astart, wait * 1000);
+		setTimeout(astart, delay * 1000);
 	}
 });
 

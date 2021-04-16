@@ -55,11 +55,12 @@
 	<form>
 		<section>
 			<ul>
-				<h3><strong>Colab Autorun and Connect</strong></h3>
+				<h3>Colab Autorun and Connect</h3>
 				<p><a href="https://github.com/tdulcet/Colab-Autorun-and-Connect" target="_blank" class="button">ℹ️
 						Information</a>
 					<a href="https://www.tealdulcet.com/" target="_blank" class="button">❤️ Donate</a>
 				</p>
+				<hr>
 
 				<li>
 					<div class="line">
@@ -82,9 +83,17 @@
 						<input class="setting save-on-change" type="number" id="wait" data-optiongroup="settings" name="wait" min="10" required>
 					</div>
 					<span class="line indent helper-text">How long to wait after attempting to connect to check if it
-						actually connected. Additionally, how long to wait after loading a notebook or regaining network
-						connectivity before attempting to connect again. 🐌 Note: Slower devices may need a longer
-						time.</span>
+						actually connected. 🐢 Note: Slower devices may need a longer time.</span>
+				</li>
+
+				<li>
+					<div class="line">
+						<label for="delay">Delay</label>
+						<input class="setting save-on-change" type="number" id="delay" data-optiongroup="settings" name="delay" min="0" required>
+						seconds
+					</div>
+					<span class="line indent helper-text">How long to wait after loading a notebook or regaining network
+						connectivity before attempting to connect again.</span>
 				</li>
 
 				<li>

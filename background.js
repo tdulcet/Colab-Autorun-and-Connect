@@ -13,6 +13,9 @@ let minutes = 1;
 // Seconds to wait
 let wait = 10;
 
+// Delay in seconds
+let delay = 30;
+
 // Rotate through Colab tabs when the system is idle or locked
 let ROTATE = false;
 
@@ -212,6 +215,7 @@ function setSettings(settings) {
 	RUN = settings.run;
 	minutes = settings.minutes;
 	wait = settings.wait;
+	delay = settings.delay;
 	ROTATE = settings.rotate;
 	idle = settings.idle;
 	period = settings.period;
@@ -236,7 +240,8 @@ function sendSettings(settings) {
 				"type": CONTENT,
 				"RUN": RUN,
 				"seconds": minutes * 60,
-				"wait": wait
+				"wait": wait,
+				"delay": delay
 			}
 		).catch(onError);
 	}
@@ -251,43 +256,44 @@ async function init() {
 	const settings = await AddonSettings.get("settings");
 
 	setSettings(settings);
+
+	browser.runtime.onMessage.addListener((message, sender) => {
+		// console.log(message);
+		if (message.type === NOTIFICATION) {
+			console.log(message.title, message.message, new Date(message.eventTime));
+			if (SEND) {
+				browser.notifications.create({
+					"type": "basic",
+					"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
+					"title": message.title,
+					"message": message.message,
+					"eventTime": message.eventTime
+				}).then((notificationId) => {
+					notifications.set(notificationId, sender.tab.id);
+					if (browser.tabs.warmup) {
+						browser.tabs.warmup(sender.tab.id);
+					}
+				});
+			}
+		} else if (message.type === CONTENT) {
+			browser.pageAction.show(sender.tab.id);
+
+			tabs.set(sender.tab.id, sender.tab);
+			iterator = null;
+
+			const response = {
+				"type": CONTENT,
+				"RUN": RUN,
+				"seconds": minutes * 60,
+				"wait": wait,
+				"delay": delay
+			};
+			// console.log(response);
+			return Promise.resolve(response);
+		} else if (message.type === BACKGROUND) {
+			sendSettings(message.optionValue);
+		}
+	});
 }
 
 init();
-
-browser.runtime.onMessage.addListener((message, sender) => {
-	// console.log(message);
-	if (message.type === NOTIFICATION) {
-		console.log(message.title, message.message, new Date(message.eventTime));
-		if (SEND) {
-			browser.notifications.create({
-				"type": "basic",
-				"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
-				"title": message.title,
-				"message": message.message,
-				"eventTime": message.eventTime
-			}).then((notificationId) => {
-				notifications.set(notificationId, sender.tab.id);
-				if (browser.tabs.warmup) {
-					browser.tabs.warmup(sender.tab.id);
-				}
-			});
-		}
-	} else if (message.type === CONTENT) {
-		browser.pageAction.show(sender.tab.id);
-
-		tabs.set(sender.tab.id, sender.tab);
-		iterator = null;
-
-		const response = {
-			"type": CONTENT,
-			"RUN": RUN,
-			"seconds": minutes * 60,
-			"wait": wait
-		};
-		// console.log(response);
-		return Promise.resolve(response);
-	} else if (message.type === BACKGROUND) {
-		sendSettings(message.optionValue);
-	}
-});
