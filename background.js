@@ -4,29 +4,16 @@ import * as AddonSettings from "/common/modules/AddonSettings/AddonSettings.js";
 
 const ALARM = "rotate";
 
-// Automatically run the first cell
-let RUN = false;
-
-// Minutes to retry
-let minutes = 1;
-
-// Seconds to wait
-let wait = 10;
-
-// Delay in seconds
-let delay = 30;
-
-// Rotate through Colab tabs when the system is idle or locked
-let ROTATE = false;
-
-// Idle time in seconds
-let idle = 10 * 60;
-
-// Period in minutes to show each tab
-let period = minutes;
-
-// Display notifications
-let SEND = true;
+const settings = {
+	run: null,
+	minutes: null,
+	wait: null, // Seconds
+	delay: null, // Seconds
+	rotate: null,
+	idle: null, // Seconds
+	period: null, // Minutes
+	send: null
+};
 
 const notifications = new Map();
 
@@ -125,7 +112,7 @@ async function rotate() {
  */
 function newState(state) {
 	// console.log(`New state: ${state}`);
-	if (ROTATE) {
+	if (settings.rotate) {
 		console.log(new Date(), state);
 		if (state === "locked" || state === "idle") {
 			if (!atab && tabs.size > 0) {
@@ -139,7 +126,7 @@ function newState(state) {
 							rotate();
 
 							browser.alarms.create(ALARM, {
-								periodInMinutes: period
+								periodInMinutes: settings.period
 							});
 						});
 					}
@@ -208,40 +195,40 @@ browser.alarms.onAlarm.addListener(handleAlarm);
 /**
  * Set settings.
  *
- * @param {Object} settings
+ * @param {Object} asettings
  * @returns {void}
  */
-function setSettings(settings) {
-	RUN = settings.run;
-	minutes = settings.minutes;
-	wait = settings.wait;
-	delay = settings.delay;
-	ROTATE = settings.rotate;
-	idle = settings.idle;
-	period = settings.period;
-	SEND = settings.send;
+function setSettings(asettings) {
+	settings.run = asettings.run;
+	settings.minutes = asettings.minutes;
+	settings.wait = asettings.wait;
+	settings.delay = asettings.delay;
+	settings.rotate = asettings.rotate;
+	settings.idle = asettings.idle;
+	settings.period = asettings.period;
+	settings.send = asettings.send;
 
-	browser.idle.setDetectionInterval(idle);
+	browser.idle.setDetectionInterval(settings.idle);
 }
 
 /**
  * Send settings to content scripts.
  *
- * @param {Object} settings
+ * @param {Object} asettings
  * @returns {void}
  */
-function sendSettings(settings) {
-	setSettings(settings);
+function sendSettings(asettings) {
+	setSettings(asettings);
 
 	for (const tab of tabs.values()) {
 		browser.tabs.sendMessage(
 			tab.id,
 			{
 				"type": CONTENT,
-				"RUN": RUN,
-				"seconds": minutes * 60,
-				"wait": wait,
-				"delay": delay
+				"RUN": asettings.run,
+				"seconds": settings.minutes * 60,
+				"wait": settings.wait,
+				"delay": settings.delay
 			}
 		).catch(onError);
 	}
@@ -253,15 +240,15 @@ function sendSettings(settings) {
  * @returns {void}
  */
 async function init() {
-	const settings = await AddonSettings.get("settings");
+	const asettings = await AddonSettings.get("settings");
 
-	setSettings(settings);
+	setSettings(asettings);
 
 	browser.runtime.onMessage.addListener((message, sender) => {
 		// console.log(message);
 		if (message.type === NOTIFICATION) {
 			console.log(message.title, message.message, new Date(message.eventTime));
-			if (SEND) {
+			if (settings.send) {
 				browser.notifications.create({
 					"type": "basic",
 					"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
@@ -283,10 +270,10 @@ async function init() {
 
 			const response = {
 				"type": CONTENT,
-				"RUN": RUN,
-				"seconds": minutes * 60,
-				"wait": wait,
-				"delay": delay
+				"RUN": asettings.run,
+				"seconds": settings.minutes * 60,
+				"wait": settings.wait,
+				"delay": settings.delay
 			};
 			// console.log(response);
 			return Promise.resolve(response);

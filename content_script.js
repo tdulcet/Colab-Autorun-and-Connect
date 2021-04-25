@@ -233,7 +233,7 @@ function connect() {
 			console.time(label);
 			console.log("Connecting");
 			console.debug("Clicking button:", abutton.innerText);
-			button.click();
+			abutton.click();
 
 			now = Date.now();
 			setTimeout(connected, wait * 1000);
