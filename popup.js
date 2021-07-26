@@ -58,9 +58,9 @@ function getSecondsAsDigitalClock(sec_num) {
 function outputstopwatch(time, now) {
 	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
 	if (sec_num > 0) {
-		stopwatch.innerHTML = (running && sec_num >= 3600 * 12 ? "‼️ " : "") + getSecondsAsDigitalClock(sec_num);
+		stopwatch.textContent = (running && sec_num >= 3600 * 12 ? "‼️ " : "") + getSecondsAsDigitalClock(sec_num);
 	} else {
-		stopwatch.innerHTML = "";
+		stopwatch.textContent = "";
 	}
 }
 
@@ -102,11 +102,11 @@ function updatePopup(time) {
 	// console.log(running, time);
 
 	const status = document.getElementById("status");
-	status.innerHTML = time ? (running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
+	status.textContent = time ? (running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
 
 	if (time) {
 		const now = Date.now();
-		document.getElementById("date").innerHTML = outputdate(time);
+		document.getElementById("date").textContent = outputdate(time);
 		if (timeoutID) {
 			clearTimeout(timeoutID);
 			timeoutID = null;
@@ -126,7 +126,7 @@ function updatePopup(time) {
  */
 function getstatus() {
 	const status = document.getElementById("status");
-	status.innerHTML = "Loading…";
+	status.textContent = "Loading…";
 
 	browser.tabs.executeScript(tabId, {
 		code: "send();"
@@ -153,7 +153,7 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 			}).catch(handleError);
 
 			const status = document.getElementById("status");
-			status.innerHTML = "Waiting…";
+			status.textContent = "Waiting…";
 
 			document.getElementById("table").classList.remove("hidden");
 		} else {
