@@ -21,7 +21,7 @@ Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and
 
 ❤️ Please visit [tealdulcet.com](https://www.tealdulcet.com/) to support this extension and my other software development.
 
-🔜 This will soon be published to Addons.mozilla.org (AMO) and possibly the Chrome Web Store.
+⬇️ Download from [Addons.mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/colab-autorun-and-connect/) (AMO).
 
 Use on Chromium/Chrome requires the downloading the [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) and renaming the [chromemanifest.json](chromemanifest.json) file to `manifest.json`.
 
