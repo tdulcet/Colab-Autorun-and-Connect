@@ -8,6 +8,9 @@ const NOTIFICATION = "notification";
 const label = "Colab Autorun and Connect";
 const MAX = 10;
 
+const options = { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" };
+const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+
 // Automatically run the first cell
 let RUN = false;
 
@@ -72,7 +75,7 @@ function notification(title, message, date) {
  * @returns {string}
  */
 function outputdate(date) {
-	return new Date(date).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+	return dateTimeFormat.format(new Date(date));
 }
 
 /**
@@ -166,7 +169,7 @@ function connected() {
  * @returns {void}
  */
 function check() {
-	const button = document.getElementById("ok");
+	let button = document.getElementById("ok");
 
 	if (button) {
 		const abutton = document.querySelector("paper-button#cancel");
@@ -179,6 +182,14 @@ function check() {
 			console.warn("Warning: OK button found. Clicking button:", button.innerText);
 			click(button, "ok", "OK");
 		}
+	}
+
+	button = document.querySelector("colab-recaptcha-dialog");
+
+	if (button) {
+		button = button.shadowRoot.querySelector("mwc-dialog").querySelector("mwc-button").shadowRoot.getElementById("button");
+		console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
+		button.click();
 	}
 }
 
