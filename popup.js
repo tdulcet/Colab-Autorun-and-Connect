@@ -30,19 +30,19 @@ function getSecondsAsDigitalClock(sec_num) {
 	const s = sec_num % 86400 % 3600 % 60;
 	let text = "";
 	if (d > 0) {
-		// text += d.toLocaleString() + ' days ';
+		// text += d.toLocaleString() + '\xa0days ';
 		text += `${numberFormat1.format(d)} `;
 	}
 	if (d > 0 || h > 0) {
-		// text += ((h < 10) ? '0' + h : h) + ' hours ';
+		// text += ((h < 10) ? '0' + h : h) + '\xa0hours ';
 		text += `${numberFormat2.format(h)} `;
 	}
 	if (d > 0 || h > 0 || m > 0) {
-		// text += ((m < 10) ? '0' + m : m) + ' minutes ';
+		// text += ((m < 10) ? '0' + m : m) + '\xa0minutes ';
 		text += `${numberFormat3.format(m)} `;
 	}
 	if (d > 0 || h > 0 || m > 0 || s > 0) {
-		// text += ((s < 10) ? '0' + s : s) + ' seconds';
+		// text += ((s < 10) ? '0' + s : s) + '\xa0seconds';
 		text += numberFormat4.format(s);
 	}
 	return text;
@@ -58,7 +58,7 @@ function getSecondsAsDigitalClock(sec_num) {
 function outputstopwatch(time, now) {
 	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
 	if (sec_num > 0) {
-		stopwatch.textContent = (running && sec_num >= 3600 * 12 ? "‼️ " : "") + getSecondsAsDigitalClock(sec_num);
+		stopwatch.textContent = (running && sec_num >= 3600 * 12 ? "‼️\xa0" : "") + getSecondsAsDigitalClock(sec_num);
 	} else {
 		stopwatch.textContent = "";
 	}
@@ -101,21 +101,25 @@ function handleError(error) {
 function updatePopup(time) {
 	// console.log(running, time);
 
-	const status = document.getElementById("status");
-	status.textContent = time ? (running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
+	if (enabled) {
+		document.getElementById("status").textContent = time ? (running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
 
-	if (time) {
-		const now = Date.now();
-		document.getElementById("date").textContent = outputdate(time);
-		if (timeoutID) {
-			clearTimeout(timeoutID);
-			timeoutID = null;
+		if (time) {
+			const now = Date.now();
+			document.getElementById("date").textContent = outputdate(time);
+			if (timeoutID) {
+				clearTimeout(timeoutID);
+				timeoutID = null;
+			}
+			outputstopwatch(time, now);
+
+			timerTick(time);
+
+			document.getElementById("time").classList.remove("hidden");
 		}
-		outputstopwatch(time, now);
-
-		timerTick(time);
-
-		document.getElementById("time").classList.remove("hidden");
+	} else {
+		document.getElementById("table").classList.add("hidden");
+		document.getElementById("time").classList.add("hidden");
 	}
 }
 
@@ -125,8 +129,7 @@ function updatePopup(time) {
  * @returns {void}
  */
 function getstatus() {
-	const status = document.getElementById("status");
-	status.textContent = "Loading…";
+	document.getElementById("status").textContent = "Loading…";
 
 	browser.tabs.executeScript(tabId, {
 		code: "send();"
@@ -152,8 +155,7 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 				code: "start();"
 			}).catch(handleError);
 
-			const status = document.getElementById("status");
-			status.textContent = "Waiting…";
+			document.getElementById("status").textContent = "Waiting…";
 
 			document.getElementById("table").classList.remove("hidden");
 		} else {
@@ -189,10 +191,8 @@ browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 		tabId = tabs[0].id;
 
 		if (tabId) {
-			const noData = document.querySelector(".no-data");
-			noData.classList.add("hidden");
-			const entryTable = document.querySelector(".data");
-			entryTable.classList.remove("hidden");
+			document.querySelector(".no-data").classList.add("hidden");
+			document.querySelector(".data").classList.remove("hidden");
 
 			getstatus();
 		}

@@ -5,7 +5,7 @@ Copyright © 2020 Teal Dulcet and Daniel Connelly
 
 ![](icons/logo.png)
 
-Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and optionally run the first cell of notebooks in Google's [Colaboratory](https://colab.research.google.com/) (Colab) service. Useful when running [Distributed Computing projects in Colab](https://github.com/tdulcet/Distributed-Computing-Scripts/google-colab).
+Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and optionally run the first cell of notebooks in Google's [Colaboratory](https://colab.research.google.com/) (Colab) service. Useful when running [Distributed Computing projects in Colab](https://github.com/tdulcet/Distributed-Computing-Scripts/tree/master/google-colab).
 
 * Automatically connects to notebooks
 * Automatically reconnects to notebooks

@@ -28,6 +28,7 @@ let running = false;
 let time = null;
 
 let now = 0;
+let timeoutID = null;
 let intervalID = null;
 
 /**
@@ -263,6 +264,10 @@ function connect() {
  * @returns {void}
  */
 function astop() {
+	if (timeoutID) {
+		clearTimeout(timeoutID);
+		timeoutID = null;
+	}
 	if (intervalID) {
 		clearInterval(intervalID);
 		intervalID = null;
@@ -280,6 +285,7 @@ function stop() {
 		astop();
 
 		enabled = false;
+		time = null;
 		console.log("Colab Autorun and Connect stopped");
 	} else {
 		console.error("Error: Colab Autorun and Connect already stopped.");
@@ -292,6 +298,7 @@ function stop() {
  * @returns {void}
  */
 function astart() {
+	timeoutID = null;
 	if (!intervalID) {
 		if (RUN) {
 			run();
@@ -338,7 +345,7 @@ function handleResponse(message, sender) {
 		// console.log(message);
 
 		astop();
-		setTimeout(astart, delay * 1000);
+		timeoutID = setTimeout(astart, delay * 1000);
 	}
 }
 
@@ -367,7 +374,7 @@ window.addEventListener("online", (e) => {
 	console.log("Online");
 
 	if (enabled) {
-		setTimeout(astart, delay * 1000);
+		timeoutID = setTimeout(astart, delay * 1000);
 	}
 });
 
