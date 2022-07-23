@@ -1,9 +1,9 @@
 "use strict";
 
-const numberFormat1 = new Intl.NumberFormat(undefined, { style: "unit", unit: "day", unitDisplay: "long" });
-const numberFormat2 = new Intl.NumberFormat(undefined, { style: "unit", unit: "hour", unitDisplay: "long" });
-const numberFormat3 = new Intl.NumberFormat(undefined, { style: "unit", unit: "minute", unitDisplay: "long" });
-const numberFormat4 = new Intl.NumberFormat(undefined, { style: "unit", unit: "second", unitDisplay: "long" });
+const numberFormat1 = new Intl.NumberFormat([], { style: "unit", unit: "day", unitDisplay: "long" });
+const numberFormat2 = new Intl.NumberFormat([], { style: "unit", unit: "hour", unitDisplay: "long" });
+const numberFormat3 = new Intl.NumberFormat([], { style: "unit", unit: "minute", unitDisplay: "long" });
+const numberFormat4 = new Intl.NumberFormat([], { style: "unit", unit: "second", unitDisplay: "long" });
 
 // Automatically run the first cell
 let RUN = true;

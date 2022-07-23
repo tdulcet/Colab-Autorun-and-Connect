@@ -5,11 +5,11 @@ const POPUP = "popup";
 const CONTENT = "content";
 const NOTIFICATION = "notification";
 
-const label = "Colab Autorun and Connect";
+const TITLE = "Colab Autorun and Connect";
+const label = TITLE;
 const MAX = 10;
 
-const options = { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" };
-const dateTimeFormat = new Intl.DateTimeFormat(undefined, options);
+const dateTimeFormat = new Intl.DateTimeFormat([], { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
 
 // Automatically run the first cell
 let RUN = false;
@@ -286,9 +286,9 @@ function stop() {
 
 		enabled = false;
 		time = null;
-		console.log("Colab Autorun and Connect stopped");
+		console.log(`${TITLE} stopped`);
 	} else {
-		console.error("Error: Colab Autorun and Connect already stopped.");
+		console.error(`Error: ${TITLE} already stopped.`);
 	}
 }
 
@@ -321,11 +321,11 @@ function astart() {
 function start() {
 	if (!enabled) {
 		enabled = true;
-		console.log("Colab Autorun and Connect started");
+		console.log(`${TITLE} started`);
 
 		astart();
 	} else {
-		console.error("Error: Colab Autorun and Connect already started.");
+		console.error(`Error: ${TITLE} already started.`);
 	}
 }
 
@@ -378,4 +378,4 @@ window.addEventListener("online", (e) => {
 	}
 });
 
-console.log("Colab Autorun and Connect loaded");
+console.log(`${TITLE} loaded`);

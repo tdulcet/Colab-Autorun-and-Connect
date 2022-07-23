@@ -2,6 +2,8 @@
 
 import * as AddonSettings from "/common/modules/AddonSettings/AddonSettings.js";
 
+const TITLE = "Colab Autorun and Connect";
+
 const ALARM = "rotate";
 
 const settings = {
@@ -115,7 +117,7 @@ function newState(state) {
 	if (settings.rotate) {
 		console.log(new Date(), state);
 		if (state === "locked" || state === "idle") {
-			if (!atab && tabs.size > 0) {
+			if (!atab && tabs.size) {
 				browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 					if (tabs[0]) {
 						atab = tabs[0];
@@ -164,6 +166,8 @@ function newState(state) {
 	}
 }
 
+browser.idle.onStateChanged.addListener(newState);
+
 /**
  * Tab close handler.
  *
@@ -173,8 +177,6 @@ function newState(state) {
 function tabCloseHandler(tabId) {
 	tabs.delete(tabId);
 }
-
-browser.idle.onStateChanged.addListener(newState);
 
 browser.tabs.onRemoved.addListener(tabCloseHandler);
 
@@ -243,44 +245,48 @@ async function init() {
 	const asettings = await AddonSettings.get("settings");
 
 	setSettings(asettings);
-
-	browser.runtime.onMessage.addListener((message, sender) => {
-		// console.log(message);
-		if (message.type === NOTIFICATION) {
-			console.log(message.title, message.message, new Date(message.eventTime));
-			if (settings.send) {
-				browser.notifications.create({
-					"type": "basic",
-					"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
-					"title": message.title,
-					"message": message.message,
-					"eventTime": message.eventTime
-				}).then((notificationId) => {
-					notifications.set(notificationId, sender.tab.id);
-					if (browser.tabs.warmup) {
-						browser.tabs.warmup(sender.tab.id);
-					}
-				});
-			}
-		} else if (message.type === CONTENT) {
-			browser.pageAction.show(sender.tab.id);
-
-			tabs.set(sender.tab.id, sender.tab);
-			iterator = null;
-
-			const response = {
-				"type": CONTENT,
-				"RUN": asettings.run,
-				"seconds": settings.minutes * 60,
-				"wait": settings.wait,
-				"delay": settings.delay
-			};
-			// console.log(response);
-			return Promise.resolve(response);
-		} else if (message.type === BACKGROUND) {
-			sendSettings(message.optionValue);
-		}
-	});
 }
 
 init();
+
+browser.runtime.onMessage.addListener((message, sender) => {
+	// console.log(message);
+	if (message.type === NOTIFICATION) {
+		console.log(message.title, message.message, new Date(message.eventTime));
+		if (settings.send) {
+			browser.notifications.create({
+				"type": "basic",
+				"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
+				"title": message.title,
+				"message": message.message,
+				"eventTime": message.eventTime
+			}).then((notificationId) => {
+				notifications.set(notificationId, sender.tab.id);
+				if (browser.tabs.warmup) {
+					browser.tabs.warmup(sender.tab.id);
+				}
+			});
+		}
+		browser.pageAction.setTitle({
+			"title": `${TITLE}  \n${message.title}`,
+			"tabId": sender.tab.id
+		});
+	} else if (message.type === CONTENT) {
+		browser.pageAction.show(sender.tab.id);
+
+		tabs.set(sender.tab.id, sender.tab);
+		iterator = null;
+
+		const response = {
+			"type": CONTENT,
+			"RUN": asettings.run,
+			"seconds": settings.minutes * 60,
+			"wait": settings.wait,
+			"delay": settings.delay
+		};
+		// console.log(response);
+		return Promise.resolve(response);
+	} else if (message.type === BACKGROUND) {
+		sendSettings(message.optionValue);
+	}
+});
