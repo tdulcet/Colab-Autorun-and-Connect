@@ -227,7 +227,7 @@ function sendSettings(asettings) {
 			tab.id,
 			{
 				"type": CONTENT,
-				"RUN": asettings.run,
+				"RUN": settings.run,
 				"seconds": settings.minutes * 60,
 				"wait": settings.wait,
 				"delay": settings.delay
@@ -279,7 +279,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 
 		const response = {
 			"type": CONTENT,
-			"RUN": asettings.run,
+			"RUN": settings.run,
 			"seconds": settings.minutes * 60,
 			"wait": settings.wait,
 			"delay": settings.delay
