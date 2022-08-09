@@ -25,8 +25,8 @@ const stopwatch = document.getElementById("stopwatch");
 function getSecondsAsDigitalClock(sec_num) {
 	// console.log(sec_num);
 	const d = Math.floor(sec_num / 86400);
-	const h = Math.floor((sec_num % 86400) / 3600);
-	const m = Math.floor((sec_num % 86400 % 3600) / 60);
+	const h = Math.floor(sec_num % 86400 / 3600);
+	const m = Math.floor(sec_num % 86400 % 3600 / 60);
 	const s = sec_num % 86400 % 3600 % 60;
 	let text = "";
 	if (d > 0) {
@@ -72,7 +72,7 @@ function outputstopwatch(time, now) {
  */
 function timerTick(time) {
 	const now = Date.now();
-	const delay = 1000 - (now % 1000);
+	const delay = 1000 - now % 1000;
 
 	timeoutID = setTimeout(() => {
 		outputstopwatch(time, now + delay);
@@ -102,7 +102,7 @@ function updatePopup(time) {
 	// console.log(running, time);
 
 	if (enabled) {
-		document.getElementById("status").textContent = time ? (running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}`) : "❓ Unknown";
+		document.getElementById("status").textContent = time ? running ? `▶️ ${RUN ? "Running" : "Connected"}` : `⏹️ ${RUN ? "Stopped" : "Disconnected"}` : "❓ Unknown";
 
 		if (time) {
 			const now = Date.now();

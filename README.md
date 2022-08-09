@@ -38,6 +38,7 @@ Use on Chromium/Chrome requires the downloading the [webextension-polyfill](http
 Pull requests welcome! Ideas for contributions:
 
 * Convert to [Manifest V3](https://extensionworkshop.com/documentation/develop/manifest-v3-migration-guide/) (MV3)
+* Refactor into more modules
 * Add option to run all cells, not just the first
 * Workaround the issue with Colab popups hanging
 * Support when the Colab interface is not in English

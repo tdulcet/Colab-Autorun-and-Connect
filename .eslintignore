@@ -1,0 +1,3 @@
+common/modules/*/*
+!common/modules/data/*
+browser-polyfill.js

@@ -38,11 +38,11 @@ let intervalID = null;
  */
 function send() {
 	const response = {
-		"type": POPUP,
-		"RUN": RUN,
-		"enabled": enabled,
-		"running": running,
-		"time": time
+		type: POPUP,
+		RUN,
+		enabled,
+		running,
+		time
 	};
 	// console.log(response);
 
@@ -59,10 +59,10 @@ function send() {
  */
 function notification(title, message, date) {
 	const response = {
-		"type": NOTIFICATION,
-		"title": title,
-		"message": `${message}\n\nClick to view.`,
-		"eventTime": date
+		type: NOTIFICATION,
+		title,
+		message: `${message}\n\nClick to view.`,
+		eventTime: date
 	};
 	// console.log(response);
 
@@ -82,7 +82,7 @@ function outputdate(date) {
 /**
  * Click button by ID.
  *
- * @param {Object} button
+ * @param {HTMLElement} button
  * @param {string} id
  * @param {string} text
  * @returns {void}
@@ -101,7 +101,7 @@ function click(button, id, text) {
 /**
  * Click button by selector.
  *
- * @param {Object} button
+ * @param {HTMLElement} button
  * @param {string} selector
  * @param {string} text
  * @returns {void}
@@ -206,7 +206,7 @@ function run() {
 
 	if (button) {
 		button.dispatchEvent(new MouseEvent("mouseover", {
-			"bubbles": true
+			bubbles: true
 		}));
 		const title = button.title.toLowerCase();
 
@@ -359,7 +359,7 @@ function handleError(error) {
 	console.error(`Error: ${error}`);
 }
 
-browser.runtime.sendMessage({ "type": CONTENT }).then(handleResponse, handleError);
+browser.runtime.sendMessage({ type: CONTENT }).then(handleResponse, handleError);
 browser.runtime.onMessage.addListener(handleResponse);
 
 window.addEventListener("offline", (e) => {

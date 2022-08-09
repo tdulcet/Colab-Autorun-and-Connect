@@ -60,7 +60,7 @@ browser.notifications.onClosed.addListener((notificationId) => {
 /**
  * Rotate through Colab tabs.
  *
- * @returns {void}
+ * @returns {Promise<void>}
  */
 async function rotate() {
 	if (!iterator) {
@@ -226,11 +226,11 @@ function sendSettings(asettings) {
 		browser.tabs.sendMessage(
 			tab.id,
 			{
-				"type": CONTENT,
-				"RUN": settings.run,
-				"seconds": settings.minutes * 60,
-				"wait": settings.wait,
-				"delay": settings.delay
+				type: CONTENT,
+				RUN: settings.run,
+				seconds: settings.minutes * 60,
+				wait: settings.wait,
+				delay: settings.delay
 			}
 		).catch(onError);
 	}
@@ -239,7 +239,7 @@ function sendSettings(asettings) {
 /**
  * Init.
  *
- * @returns {void}
+ * @returns {Promise<void>}
  */
 async function init() {
 	const asettings = await AddonSettings.get("settings");
@@ -255,11 +255,11 @@ browser.runtime.onMessage.addListener((message, sender) => {
 		console.log(message.title, message.message, new Date(message.eventTime));
 		if (settings.send) {
 			browser.notifications.create({
-				"type": "basic",
-				"iconUrl": browser.runtime.getURL("icons/icon_128.png"),
-				"title": message.title,
-				"message": message.message,
-				"eventTime": message.eventTime
+				type: "basic",
+				iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+				title: message.title,
+				message: message.message,
+				eventTime: message.eventTime
 			}).then((notificationId) => {
 				notifications.set(notificationId, sender.tab.id);
 				if (browser.tabs.warmup) {
@@ -268,8 +268,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
 			});
 		}
 		browser.pageAction.setTitle({
-			"title": `${TITLE}  \n${message.title}`,
-			"tabId": sender.tab.id
+			title: `${TITLE}  \n${message.title}`,
+			tabId: sender.tab.id
 		});
 	} else if (message.type === CONTENT) {
 		browser.pageAction.show(sender.tab.id);
@@ -278,11 +278,11 @@ browser.runtime.onMessage.addListener((message, sender) => {
 		iterator = null;
 
 		const response = {
-			"type": CONTENT,
-			"RUN": settings.run,
-			"seconds": settings.minutes * 60,
-			"wait": settings.wait,
-			"delay": settings.delay
+			type: CONTENT,
+			RUN: settings.run,
+			seconds: settings.minutes * 60,
+			wait: settings.wait,
+			delay: settings.delay
 		};
 		// console.log(response);
 		return Promise.resolve(response);
