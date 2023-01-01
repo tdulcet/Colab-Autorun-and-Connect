@@ -124,7 +124,7 @@ function aclick(button, selector, text) {
  */
 function connected() {
 	const button = document.getElementById("ok");
-	const title = document.title.substring(0, document.title.lastIndexOf(" - "));
+	const title = document.title.slice(0, Math.max(0, document.title.lastIndexOf(" - ")));
 
 	if (button) {
 		const text = button.innerText.toLowerCase();

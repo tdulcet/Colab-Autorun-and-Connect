@@ -57,11 +57,7 @@ function getSecondsAsDigitalClock(sec_num) {
  */
 function outputstopwatch(time, now) {
 	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
-	if (sec_num > 0) {
-		stopwatch.textContent = (running && sec_num >= 3600 * 12 ? "‼️\xa0" : "") + getSecondsAsDigitalClock(sec_num);
-	} else {
-		stopwatch.textContent = "";
-	}
+	stopwatch.textContent = sec_num > 0 ? (running ? sec_num >= 3600 * 24 ? "‼️\u00A0" : sec_num >= 3600 * 12 ? "❗\u00A0" : "" : "") + getSecondsAsDigitalClock(sec_num) : "";
 }
 
 /**

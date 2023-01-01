@@ -35,6 +35,14 @@
       ]
     }
   ],
+  "commands": {
+    "_execute_page_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+C"
+      },
+      "description": "Open popup"
+    }
+  },
   "icons": {
     "32": "icons/icon_32.png",
     "64": "icons/icon_64.png",

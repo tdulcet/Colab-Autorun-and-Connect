@@ -63,9 +63,7 @@ browser.notifications.onClosed.addListener((notificationId) => {
  * @returns {Promise<void>}
  */
 async function rotate() {
-	if (!iterator) {
-		iterator = tabs.values();
-	}
+	iterator ||= tabs.values();
 
 	let result = iterator.next();
 
@@ -251,42 +249,50 @@ init();
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	// console.log(message);
-	if (message.type === NOTIFICATION) {
-		console.log(message.title, message.message, new Date(message.eventTime));
-		if (settings.send) {
-			browser.notifications.create({
-				type: "basic",
-				iconUrl: browser.runtime.getURL("icons/icon_128.png"),
-				title: message.title,
-				message: message.message,
-				eventTime: message.eventTime
-			}).then((notificationId) => {
-				notifications.set(notificationId, sender.tab.id);
-				if (browser.tabs.warmup) {
-					browser.tabs.warmup(sender.tab.id);
-				}
+	switch (message.type) {
+		case NOTIFICATION: {
+			console.log(message.title, message.message, new Date(message.eventTime));
+			if (settings.send) {
+				browser.notifications.create({
+					type: "basic",
+					iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+					title: message.title,
+					message: message.message,
+					eventTime: message.eventTime
+				}).then((notificationId) => {
+					const tabId = sender.tab.id;
+					notifications.set(notificationId, { tabId });
+					if (browser.tabs.warmup) {
+						browser.tabs.warmup(tabId);
+					}
+				});
+			}
+			browser.pageAction.setTitle({
+				title: `${TITLE}  \n${message.title}`,
+				tabId: sender.tab.id
 			});
+			break;
 		}
-		browser.pageAction.setTitle({
-			title: `${TITLE}  \n${message.title}`,
-			tabId: sender.tab.id
-		});
-	} else if (message.type === CONTENT) {
-		browser.pageAction.show(sender.tab.id);
+		case CONTENT: {
+			browser.pageAction.show(sender.tab.id);
 
-		tabs.set(sender.tab.id, sender.tab);
-		iterator = null;
+			tabs.set(sender.tab.id, sender.tab);
+			iterator = null;
 
-		const response = {
-			type: CONTENT,
-			RUN: settings.run,
-			seconds: settings.minutes * 60,
-			wait: settings.wait,
-			delay: settings.delay
-		};
-		// console.log(response);
-		return Promise.resolve(response);
-	} else if (message.type === BACKGROUND) {
-		sendSettings(message.optionValue);
+			const response = {
+				type: CONTENT,
+				RUN: settings.run,
+				seconds: settings.minutes * 60,
+				wait: settings.wait,
+				delay: settings.delay
+			};
+			// console.log(response);
+			return Promise.resolve(response);
+		}
+		case BACKGROUND: {
+			sendSettings(message.optionValue);
+			break;
+		}
+		// No default
 	}
 });
