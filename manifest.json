@@ -35,7 +35,7 @@
   "commands": {
     "_execute_page_action": {
       "suggested_key": {
-        "default": "Ctrl+Shift+C"
+        "default": "Ctrl+Alt+C"
       },
       "description": "Open popup"
     }

@@ -15,7 +15,7 @@ Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and
 * Desktop notifications when the notebooks change state
 * Optionally rotate through Colab tabs when the system is idle or locked \*
 * Page action popup with the notebooks status and a stopwatch
-* Use a keyboard shortcut to quickly open the popup (by default <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd>)
+* Use a keyboard shortcut to quickly open the popup (by default <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd>)
 * Detailed information output to the console
 * Supports the light/dark mode of your system automatically
 * Settings automatically synced between all browser instances and devices
@@ -46,7 +46,7 @@ Pull requests welcome! Ideas for contributions:
 * Workaround the issue with Colab popups hanging
 * Support when the Colab interface is not in English
 * Improve the performance
-* Allow installing in Firefox for Android from AMO (see [here](https://github.com/mozilla-mobile/fenix/issues/20736)) and sync settings (see [bug 1625257](https://bugzilla.mozilla.org/show_bug.cgi?id=1625257))
+* Allow installing in Firefox for Android from AMO (see [here](https://github.com/mozilla-mobile/fenix/issues/20736) and [bug 1796184](https://bugzilla.mozilla.org/show_bug.cgi?id=1796184)) and sync settings (see [bug 1625257](https://bugzilla.mozilla.org/show_bug.cgi?id=1625257))
 * Localize the add-on
 
 Thanks to [Daniel Connelly](https://github.com/Danc2050) for the idea for this extension and for helping test it!

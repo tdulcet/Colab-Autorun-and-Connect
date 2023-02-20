@@ -30,6 +30,25 @@ const tabs = new Map();
 let iterator = null;
 
 /**
+ * Create notification.
+ *
+ * @param {string} title
+ * @param {string} message
+ * @returns {void}
+ */
+function notification(title, message) {
+	console.log(title, message);
+	if (settings.send) {
+		browser.notifications.create({
+			type: "basic",
+			iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+			title,
+			message
+		});
+	}
+}
+
+/**
  * On error.
  *
  * @param {string} error
@@ -40,17 +59,19 @@ function onError(error) {
 }
 
 browser.notifications.onClicked.addListener((notificationId) => {
-	const tabId = notifications.get(notificationId);
+	const { tabId, url } = notifications.get(notificationId);
 
-	browser.tabs.query({}).then((tabs) => {
-		for (const tab of tabs) {
-			if (tab.id === tabId) {
-				browser.windows.update(tab.windowId, { focused: true }); // focus window
-				browser.tabs.update(tab.id, { active: true }); // focus tab
-				break;
+	if (tabId) {
+		browser.tabs.query({}).then((tabs) => {
+			const atab = tabs.find((tab) => tab.id === tabId);
+			if (atab) {
+				browser.windows.update(atab.windowId, { focused: true }); // focus window
+				browser.tabs.update(atab.id, { active: true }); // focus tab
 			}
-		}
-	}).catch(onError);
+		}).catch(onError);
+	} else if (url) {
+		browser.tabs.create({ url });
+	}
 });
 
 browser.notifications.onClosed.addListener((notificationId) => {
@@ -294,5 +315,31 @@ browser.runtime.onMessage.addListener((message, sender) => {
 			break;
 		}
 		// No default
+	}
+});
+
+browser.runtime.onInstalled.addListener((details) => {
+	console.log(details);
+
+	const manifest = browser.runtime.getManifest();
+	switch (details.reason) {
+		case "install":
+			notification(`🎉 ${manifest.name} installed`, `Thank you for installing the “${TITLE}” add-on!\nVersion: ${manifest.version}\n\nOpen the options/preferences page to configure this extension.`);
+			break;
+		case "update":
+			if (settings.send) {
+				browser.notifications.create({
+					type: "basic",
+					iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+					title: `✨ ${manifest.name} updated`,
+					message: `The “${TITLE}” add-on has been updated to version ${manifest.version}. Click to see the release notes.`
+				}).then((notificationId) => {
+					if (browser.runtime.getBrowserInfo) {
+						const url = `https://addons.mozilla.org/firefox/addon/colab-autorun-and-connect/versions/${manifest.version}`;
+						notifications.set(notificationId, { url });
+					}
+				});
+			}
+			break;
 	}
 });
