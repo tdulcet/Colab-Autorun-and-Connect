@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Colab Autorun and Connect",
-  "version": "1.1.1",
+  "version": "1.2",
   "author": "Teal Dulcet and Daniel Connelly",
 
   "description": "Automatically connect, reconnect and optionally run the first cell of notebooks in Google Colab.",

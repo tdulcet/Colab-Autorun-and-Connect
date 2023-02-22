@@ -335,7 +335,7 @@ function handleError(error) {
 browser.runtime.sendMessage({ type: CONTENT }).then(handleResponse, handleError);
 browser.runtime.onMessage.addListener(handleResponse);
 
-window.addEventListener("offline", (e) => {
+addEventListener("offline", (e) => {
 	console.log("Offline");
 
 	if (enabled) {
@@ -343,7 +343,7 @@ window.addEventListener("offline", (e) => {
 	}
 });
 
-window.addEventListener("online", (e) => {
+addEventListener("online", (e) => {
 	console.log("Online");
 
 	if (enabled) {
