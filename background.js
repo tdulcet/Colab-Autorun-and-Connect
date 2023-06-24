@@ -139,16 +139,19 @@ function newState(state) {
 			if (!atab && tabs.size) {
 				browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 					if (tabs[0]) {
-						atab = tabs[0];
-						browser.windows.get(atab.windowId).then((windowInfo) => {
-							awindow = windowInfo;
-							// console.log(tabs, windowInfo);
+						const tab = tabs[0];
+						browser.windows.get(tab.windowId).then((windowInfo) => {
+							if (windowInfo.state !== "fullscreen") {
+								atab = tab;
+								awindow = windowInfo;
+								// console.log(tabs, windowInfo);
 
-							rotate();
+								rotate();
 
-							browser.alarms.create(ALARM, {
-								periodInMinutes: settings.period
-							});
+								browser.alarms.create(ALARM, {
+									periodInMinutes: settings.period
+								});
+							}
 						});
 					}
 				});
@@ -187,17 +190,9 @@ function newState(state) {
 
 browser.idle.onStateChanged.addListener(newState);
 
-/**
- * Tab close handler.
- *
- * @param {number} tabId
- * @returns {void}
- */
-function tabCloseHandler(tabId) {
+browser.tabs.onRemoved.addListener((tabId) => {
 	tabs.delete(tabId);
-}
-
-browser.tabs.onRemoved.addListener(tabCloseHandler);
+});
 
 /**
  * Handle alarm.

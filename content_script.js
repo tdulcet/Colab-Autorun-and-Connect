@@ -4,6 +4,8 @@
 const POPUP = "popup";
 const CONTENT = "content";
 const NOTIFICATION = "notification";
+const START = "start";
+const STOP = "stop";
 
 const TITLE = "Colab Autorun and Connect";
 const label = TITLE;
@@ -165,6 +167,14 @@ function check() {
 			click(button, "ok", "OK");
 		}
 	}
+
+	button = document.querySelector("colab-recaptcha-dialog");
+
+	if (button) {
+		button = button.shadowRoot.querySelector("mwc-button").shadowRoot.getElementById("button");
+		console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
+		button.click();
+	}
 }
 
 /**
@@ -303,26 +313,6 @@ function start() {
 }
 
 /**
- * Handle response.
- *
- * @param {Object} message
- * @param {Object} sender
- * @returns {void}
- */
-function handleResponse(message, sender) {
-	if (message.type === CONTENT) {
-		RUN = message.RUN;
-		seconds = message.seconds;
-		wait = message.wait;
-		delay = message.delay;
-		// console.log(message);
-
-		astop();
-		timeoutID = setTimeout(astart, delay * 1000);
-	}
-}
-
-/**
  * Handle error.
  *
  * @param {string} error
@@ -332,8 +322,38 @@ function handleError(error) {
 	console.error(`Error: ${error}`);
 }
 
-browser.runtime.sendMessage({ type: CONTENT }).then(handleResponse, handleError);
-browser.runtime.onMessage.addListener(handleResponse);
+browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
+	if (message.type === CONTENT) {
+		RUN = message.RUN;
+		seconds = message.seconds;
+		wait = message.wait;
+		delay = message.delay;
+		// console.log(message);
+
+		timeoutID = setTimeout(astart, delay * 1000);
+	}
+}, handleError);
+
+browser.runtime.onMessage.addListener((message, sender) => {
+	if (message.type === CONTENT) {
+		RUN = message.RUN;
+		seconds = message.seconds;
+		wait = message.wait;
+		delay = message.delay;
+		// console.log(message);
+
+		if (enabled) {
+			astop();
+			timeoutID = setTimeout(astart, delay * 1000);
+		}
+	} else if (message.type === POPUP) {
+		send();
+	} else if (message.type === START) {
+		start();
+	} else if (message.type === STOP) {
+		stop();
+	}
+});
 
 addEventListener("offline", (e) => {
 	console.log("Offline");

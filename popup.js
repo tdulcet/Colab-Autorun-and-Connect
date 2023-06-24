@@ -127,9 +127,7 @@ function updatePopup(time) {
 function getstatus() {
 	document.getElementById("status").textContent = "Loading…";
 
-	browser.tabs.executeScript(tabId, {
-		code: "send();"
-	}).catch(handleError);
+	browser.tabs.sendMessage(tabId, { type: POPUP }).catch(handleError);
 }
 
 document.getElementById("settings").addEventListener("click", (event) => {
@@ -147,17 +145,13 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 		if (enabled) {
 			event.target.disabled = true;
 
-			browser.tabs.executeScript(tabId, {
-				code: "start();"
-			}).catch(handleError);
+			browser.tabs.sendMessage(tabId, { type: START }).catch(handleError);
 
 			document.getElementById("status").textContent = "Waiting…";
 
 			document.getElementById("table").classList.remove("hidden");
 		} else {
-			browser.tabs.executeScript(tabId, {
-				code: "stop();"
-			}).catch(handleError);
+			browser.tabs.sendMessage(tabId, { type: STOP }).catch(handleError);
 
 			document.getElementById("table").classList.add("hidden");
 			document.getElementById("time").classList.add("hidden");
