@@ -261,7 +261,7 @@ async function init() {
 	setSettings(asettings);
 }
 
-init();
+await init();
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	// console.log(message);
