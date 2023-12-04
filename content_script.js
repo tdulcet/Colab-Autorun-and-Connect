@@ -25,8 +25,12 @@ let delay = 30;
 // Seconds to wait
 let wait = 10;
 
+// Dismiss the reCAPTCHA popups
+let CAPTCHA = true;
+
 let enabled = true;
 let running = false;
+let captcha = false;
 let time = null;
 
 let now = 0;
@@ -56,7 +60,7 @@ function send() {
  *
  * @param {string} title
  * @param {string} message
- * @param {number} date
+ * @param {number} [date]
  * @returns {void}
  */
 function notification(title, message, date) {
@@ -170,10 +174,23 @@ function check() {
 
 	button = document.querySelector("colab-recaptcha-dialog");
 
-	if (button) {
-		button = button.shadowRoot.querySelector("mwc-button").shadowRoot.getElementById("button");
-		console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
-		button.click();
+	if (CAPTCHA) {
+		if (button) {
+			button = button.shadowRoot.querySelector("mwc-button").shadowRoot.getElementById("button");
+			console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
+			button.click();
+		}
+	} else {
+		const title = document.title.slice(0, Math.max(0, document.title.lastIndexOf(" - ")));
+
+		if (button) {
+			if (!captcha) {
+				captcha = true;
+				notification("❗ Colab reCAPTCHA popup needs attention", `A Colab reCAPTCHA popup needs attention on the “${title}” notebook.`);
+			}
+		} else if (captcha) {
+			captcha = false;
+		}
 	}
 }
 
@@ -324,10 +341,13 @@ function handleError(error) {
 
 browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
 	if (message.type === CONTENT) {
-		RUN = message.RUN;
-		seconds = message.seconds;
-		wait = message.wait;
-		delay = message.delay;
+		({
+			RUN,
+			seconds,
+			wait,
+			delay,
+			CAPTCHA
+		} = message);
 		// console.log(message);
 
 		timeoutID = setTimeout(astart, delay * 1000);
@@ -335,23 +355,36 @@ browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
 }, handleError);
 
 browser.runtime.onMessage.addListener((message, sender) => {
-	if (message.type === CONTENT) {
-		RUN = message.RUN;
-		seconds = message.seconds;
-		wait = message.wait;
-		delay = message.delay;
-		// console.log(message);
+	switch (message.type) {
+		case CONTENT: {
+			({
+				RUN,
+				seconds,
+				wait,
+				delay,
+				CAPTCHA
+			} = message);
+			// console.log(message);
 
-		if (enabled) {
-			astop();
-			timeoutID = setTimeout(astart, delay * 1000);
+			if (enabled) {
+				astop();
+				timeoutID = setTimeout(astart, delay * 1000);
+			}
+			break;
 		}
-	} else if (message.type === POPUP) {
-		send();
-	} else if (message.type === START) {
-		start();
-	} else if (message.type === STOP) {
-		stop();
+		case POPUP: {
+			send();
+			break;
+		}
+		case START: {
+			start();
+			break;
+		}
+		case STOP: {
+			stop();
+			break;
+		}
+		// No default
 	}
 });
 

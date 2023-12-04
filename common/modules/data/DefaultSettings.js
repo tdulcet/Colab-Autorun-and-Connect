@@ -17,6 +17,7 @@ const defaultSettings = {
 		minutes: 1,
 		wait: 10, // Seconds
 		delay: 30, // Seconds
+		captcha: true,
 		rotate: false,
 		idle: 10 * 60, // Seconds
 		period: 1, // Minutes

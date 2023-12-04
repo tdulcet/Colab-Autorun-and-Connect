@@ -1,5 +1,7 @@
 "use strict";
 
+import { POPUP, START, STOP, outputdate } from "/common.js";
+
 const numberFormat1 = new Intl.NumberFormat([], { style: "unit", unit: "day", unitDisplay: "long" });
 const numberFormat2 = new Intl.NumberFormat([], { style: "unit", unit: "hour", unitDisplay: "long" });
 const numberFormat3 = new Intl.NumberFormat([], { style: "unit", unit: "minute", unitDisplay: "long" });
@@ -162,9 +164,11 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 browser.runtime.onMessage.addListener((message, sender) => {
 	if (sender.tab.id === tabId) {
 		if (message.type === POPUP) {
-			RUN = message.RUN;
-			enabled = message.enabled;
-			running = message.running;
+			({
+				RUN,
+				enabled,
+				running
+			} = message);
 
 			const aenabled = document.getElementById("enabled");
 			aenabled.checked = enabled;

@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="/common/common.css">
 	<link rel="stylesheet" href="options.css">
 
-	<script type="application/javascript" src="../browser-polyfill.js"></script>
+	<script src="../browser-polyfill.js" type="module"></script>
 
 	<!-- <script defer src="../common/common.js" type="module"></script> -->
 	<script defer src="./options.js" type="module"></script>
@@ -96,6 +96,15 @@
 					</div>
 					<span class="line indent helper-text">How long to wait after loading a notebook or regaining network
 						connectivity before attempting to connect again.</span>
+				</li>
+
+				<li>
+					<div class="line">
+						<input class="setting save-on-change" type="checkbox" id="captcha" data-optiongroup="settings" name="captcha">
+						<label for="captcha">Automatically dismiss the reCAPTCHA popups</label>
+					</div>
+					<span class="line indent helper-text">Users may get a longer runtime by manually doing the
+						reCAPTCHAs.</span>
 				</li>
 
 				<li>

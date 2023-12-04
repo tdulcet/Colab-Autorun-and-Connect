@@ -1,5 +1,7 @@
 "use strict";
 
+import { CONTENT, BACKGROUND, NOTIFICATION } from "/common.js";
+
 import * as AddonSettings from "/common/modules/AddonSettings/AddonSettings.js";
 
 const TITLE = "Colab Autorun and Connect";
@@ -11,6 +13,7 @@ const settings = {
 	minutes: null,
 	wait: null, // Seconds
 	delay: null, // Seconds
+	captcha: null,
 	rotate: null,
 	idle: null, // Seconds
 	period: null, // Minutes
@@ -114,7 +117,7 @@ async function rotate() {
 
 		browser.tabs.query({ active: true, windowId: tab.windowId }).then((tabs) => {
 			if (tabs[0]) {
-				previousTab = tabs[0];
+				[previousTab] = tabs;
 				// console.log(tabs);
 			}
 		});
@@ -139,7 +142,7 @@ function newState(state) {
 			if (!atab && tabs.size) {
 				browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 					if (tabs[0]) {
-						const tab = tabs[0];
+						const [tab] = tabs;
 						browser.windows.get(tab.windowId).then((windowInfo) => {
 							if (windowInfo.state !== "fullscreen") {
 								atab = tab;
@@ -219,6 +222,7 @@ function setSettings(asettings) {
 	settings.minutes = asettings.minutes;
 	settings.wait = asettings.wait;
 	settings.delay = asettings.delay;
+	settings.captcha = asettings.captcha;
 	settings.rotate = asettings.rotate;
 	settings.idle = asettings.idle;
 	settings.period = asettings.period;
@@ -244,7 +248,8 @@ function sendSettings(asettings) {
 				RUN: settings.run,
 				seconds: settings.minutes * 60,
 				wait: settings.wait,
-				delay: settings.delay
+				delay: settings.delay,
+				CAPTCHA: settings.captcha
 			}
 		).catch(onError);
 	}
@@ -300,7 +305,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
 				RUN: settings.run,
 				seconds: settings.minutes * 60,
 				wait: settings.wait,
-				delay: settings.delay
+				delay: settings.delay,
+				CAPTCHA: settings.captcha
 			};
 			// console.log(response);
 			return Promise.resolve(response);
