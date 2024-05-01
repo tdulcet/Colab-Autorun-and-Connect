@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/tdulcet/Colab-Autorun-and-Connect/workflows/CI/badge.svg?branch=master)](https://github.com/tdulcet/Colab-Autorun-and-Connect/actions)
+[![Actions Status](https://github.com/tdulcet/Colab-Autorun-and-Connect/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/tdulcet/Colab-Autorun-and-Connect/actions/workflows/ci.yml)
 
 # Colab Autorun and Connect
 Automatically connect, reconnect and optionally run the first cell of notebooks in Google Colab
