@@ -271,7 +271,7 @@ await init();
 browser.runtime.onMessage.addListener((message, sender) => {
 	// console.log(message);
 	switch (message.type) {
-		case NOTIFICATION: {
+		case NOTIFICATION:
 			console.log(message.title, message.message, new Date(message.eventTime));
 			if (settings.send) {
 				browser.notifications.create({
@@ -293,7 +293,6 @@ browser.runtime.onMessage.addListener((message, sender) => {
 				tabId: sender.tab.id
 			});
 			break;
-		}
 		case CONTENT: {
 			browser.pageAction.show(sender.tab.id);
 
@@ -311,10 +310,9 @@ browser.runtime.onMessage.addListener((message, sender) => {
 			// console.log(response);
 			return Promise.resolve(response);
 		}
-		case BACKGROUND: {
+		case BACKGROUND:
 			sendSettings(message.optionValue);
 			break;
-		}
 		// No default
 	}
 });

@@ -188,8 +188,8 @@ function check() {
 				captcha = true;
 				notification("❗ Colab reCAPTCHA popup needs attention", `A Colab reCAPTCHA popup needs attention on the “${title}” notebook.`);
 			}
-		} else if (captcha) {
-			captcha = false;
+		} else {
+			captcha &&= false;
 		}
 	}
 }
@@ -210,7 +210,10 @@ function run() {
 		}));
 		const title = button.title.toLowerCase();
 
-		if (!(title.includes("queued") || title.includes("executing") || title.includes("interrupt"))) {
+		if (title.includes("queued") || title.includes("executing") || title.includes("interrupt")) {
+			console.log(`Notebook already running, will recheck in ${seconds} seconds`);
+			// running = true;
+		} else {
 			// console.log(button);
 			console.time(label);
 			console.log("Connecting and running first cell");
@@ -219,9 +222,6 @@ function run() {
 
 			now = Date.now();
 			setTimeout(connected, wait * 1000);
-		} else {
-			console.log(`Notebook already running, will recheck in ${seconds} seconds`);
-			// running = true;
 		}
 	} else {
 		console.error("Error: Cannot find run button");
@@ -319,13 +319,13 @@ function astart() {
  * @returns {void}
  */
 function start() {
-	if (!enabled) {
+	if (enabled) {
+		console.error(`Error: ${TITLE} already started.`);
+	} else {
 		enabled = true;
 		console.log(`${TITLE} started`);
 
 		astart();
-	} else {
-		console.error(`Error: ${TITLE} already started.`);
 	}
 }
 
@@ -356,7 +356,7 @@ browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
 
 browser.runtime.onMessage.addListener((message, sender) => {
 	switch (message.type) {
-		case CONTENT: {
+		case CONTENT:
 			({
 				RUN,
 				seconds,
@@ -371,24 +371,20 @@ browser.runtime.onMessage.addListener((message, sender) => {
 				timeoutID = setTimeout(astart, delay * 1000);
 			}
 			break;
-		}
-		case POPUP: {
+		case POPUP:
 			send();
 			break;
-		}
-		case START: {
+		case START:
 			start();
 			break;
-		}
-		case STOP: {
+		case STOP:
 			stop();
 			break;
-		}
 		// No default
 	}
 });
 
-addEventListener("offline", (e) => {
+addEventListener("offline", (/* e */) => {
 	console.log("Offline");
 
 	if (enabled) {
@@ -396,7 +392,7 @@ addEventListener("offline", (e) => {
 	}
 });
 
-addEventListener("online", (e) => {
+addEventListener("online", (/* e */) => {
 	console.log("Online");
 
 	if (enabled) {
