@@ -24,11 +24,28 @@ Firefox and Chromium add-on/WebExtension to automatically connect, reconnect and
 
 ❤️ Please visit [tealdulcet.com](https://www.tealdulcet.com/) to support this extension and my other software development.
 
-⬇️ Download from [Addons.mozilla.org](https://addons.mozilla.org/firefox/addon/colab-autorun-and-connect/) (AMO).
-
-Use on Chromium/Chrome requires the downloading the [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) and renaming the [chromemanifest.json](chromemanifest.json) file to `manifest.json`.
-
 \* Tab rotate does not currently work well with Firefox on Windows because of [Bug 1615885](https://bugzilla.mozilla.org/show_bug.cgi?id=1615885).
+
+## Download
+
+* [Addons.mozilla.org](https://addons.mozilla.org/firefox/addon/colab-autorun-and-connect/) (AMO)
+
+## Install from source
+
+Clone the repository:
+```bash
+git clone --recurse-submodules https://github.com/tdulcet/Colab-Autorun-and-Connect.git
+```
+
+### Firefox
+
+Follow [these instructions](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/) to install it in Firefox
+
+### Chromium/Chrome
+
+1. Download the [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) (specifically download the `browser-polyfill.js` file [from here](https://unpkg.com/webextension-polyfill/dist/))
+2. Rename the[chromemanifest.json](chromemanifest.json) file to `manifest.json`
+3. Follow [these instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world) to install it in Chromium/Chrome
 
 ## Other Colab Extensions
 

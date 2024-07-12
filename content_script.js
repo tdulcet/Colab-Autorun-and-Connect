@@ -354,7 +354,7 @@ browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
 	}
 }, handleError);
 
-browser.runtime.onMessage.addListener((message, sender) => {
+browser.runtime.onMessage.addListener((message, _sender) => {
 	switch (message.type) {
 		case CONTENT:
 			({

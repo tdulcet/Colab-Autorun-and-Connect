@@ -28,7 +28,7 @@ function getSecondsAsDigitalClock(sec_num) {
 	// console.log(sec_num);
 	const d = Math.floor(sec_num / 86400);
 	const h = Math.floor(sec_num % 86400 / 3600);
-	const m = Math.floor(sec_num % 86400 % 3600 / 60);
+	const m = Math.floor(sec_num % 3600 / 60);
 	const s = sec_num % 60;
 	let text = "";
 	if (d > 0) {

@@ -266,10 +266,11 @@ async function init() {
 	setSettings(asettings);
 }
 
-await init();
+const promise = init();
 
-browser.runtime.onMessage.addListener((message, sender) => {
+browser.runtime.onMessage.addListener(async (message, sender) => {
 	// console.log(message);
+	await promise;
 	switch (message.type) {
 		case NOTIFICATION:
 			console.log(message.title, message.message, new Date(message.eventTime));
