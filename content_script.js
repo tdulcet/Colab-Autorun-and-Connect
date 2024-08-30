@@ -205,15 +205,10 @@ function run() {
 	const button = document.querySelector("colab-run-button");
 
 	if (button) {
-		button.dispatchEvent(new MouseEvent("mouseover", {
-			bubbles: true
-		}));
-		const title = button.title.toLowerCase();
-
-		if (title.includes("queued") || title.includes("executing") || title.includes("interrupt")) {
+		if (button.shadowRoot.getElementById("stopSymbolMask")) {
 			console.log(`Notebook already running, will recheck in ${seconds} seconds`);
 			// running = true;
-		} else {
+		} else { // button.shadowRoot.getElementById("playSymbolMask")
 			// console.log(button);
 			console.time(label);
 			console.log("Connecting and running first cell");
@@ -284,7 +279,7 @@ function stop() {
 	if (enabled) {
 		astop();
 
-		enabled = false;
+		enabled = running = false;
 		time = null;
 		console.log(`${TITLE} stopped`);
 	} else {

@@ -44,7 +44,7 @@ Follow [these instructions](https://extensionworkshop.com/documentation/develop/
 ### Chromium/Chrome
 
 1. Download the [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) (specifically download the `browser-polyfill.js` file [from here](https://unpkg.com/webextension-polyfill/dist/))
-2. Rename the[chromemanifest.json](chromemanifest.json) file to `manifest.json`
+2. Rename the [chromemanifest.json](chromemanifest.json) file to `manifest.json`
 3. Follow [these instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world) to install it in Chromium/Chrome
 
 ## Other Colab Extensions
