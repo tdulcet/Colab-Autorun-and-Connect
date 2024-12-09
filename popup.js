@@ -19,32 +19,28 @@ let timeoutID = null;
 const stopwatch = document.getElementById("stopwatch");
 
 /**
- * Get seconds as digital clock.
+ * Output duration.
  *
- * @param {number} sec_num
+ * @param {number} sec
  * @returns {string}
  */
-function getSecondsAsDigitalClock(sec_num) {
-	// console.log(sec_num);
-	const d = Math.floor(sec_num / 86400);
-	const h = Math.floor(sec_num % 86400 / 3600);
-	const m = Math.floor(sec_num % 3600 / 60);
-	const s = sec_num % 60;
+function outputduration(sec) {
+	// console.log(sec);
+	const d = Math.floor(sec / 86400);
+	const h = Math.floor(sec % 86400 / 3600);
+	const m = Math.floor(sec % 3600 / 60);
+	const s = sec % 60;
 	let text = "";
 	if (d > 0) {
-		// text += d.toLocaleString() + '\xa0days ';
 		text += `${numberFormat1.format(d)} `;
 	}
 	if (d > 0 || h > 0) {
-		// text += ((h < 10) ? '0' + h : h) + '\xa0hours ';
 		text += `${numberFormat2.format(h)} `;
 	}
 	if (d > 0 || h > 0 || m > 0) {
-		// text += ((m < 10) ? '0' + m : m) + '\xa0minutes ';
 		text += `${numberFormat3.format(m)} `;
 	}
 	if (d > 0 || h > 0 || m > 0 || s > 0) {
-		// text += ((s < 10) ? '0' + s : s) + '\xa0seconds';
 		text += numberFormat4.format(s);
 	}
 	return text;
@@ -58,8 +54,8 @@ function getSecondsAsDigitalClock(sec_num) {
  * @returns {void}
  */
 function outputstopwatch(time, now) {
-	const sec_num = Math.floor(now / 1000) - Math.floor(time / 1000);
-	stopwatch.textContent = sec_num > 0 ? (running ? sec_num >= 3600 * 24 ? "‼️\u00A0" : sec_num >= 3600 * 12 ? "❗\u00A0" : "" : "") + getSecondsAsDigitalClock(sec_num) : "";
+	const sec = Math.floor((now - time) / 1000);
+	stopwatch.textContent = sec > 0 ? (running ? sec >= 3600 * 24 ? "‼️\u00A0" : sec >= 3600 * 12 ? "❗\u00A0" : "" : "") + outputduration(sec) : "";
 }
 
 /**

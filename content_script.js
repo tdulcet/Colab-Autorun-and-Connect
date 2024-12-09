@@ -110,19 +110,19 @@ function click(button, selector, text) {
  * @returns {void}
  */
 function connected() {
-	const button = document.querySelector("mwc-button[slot=primaryAction]");
+	const button = document.querySelector("md-text-button[slot=primaryAction]");
 	const title = document.title.slice(0, Math.max(0, document.title.lastIndexOf(" - ")));
 
 	if (button) {
 		const text = button.innerText.toLowerCase();
 		if (text.includes("connect") || text.includes("without") || text.includes("manage")) {
 			console.log(`Unable to connect${text.includes("without") ? " with selected runtime" : ""}, will retry in ${seconds} seconds`);
-			const abutton = document.querySelector("mwc-button[slot=secondaryAction]");
+			const abutton = document.querySelector("md-text-button[slot=secondaryAction]");
 			// console.log(button, abutton);
 
 			if (abutton) {
 				console.debug("Clicking button:", abutton.innerText, "Not clicking button:", button.innerText);
-				click(abutton, "mwc-button[slot=secondaryAction]", "Cancel");
+				click(abutton, "md-text-button[slot=secondaryAction]", "Cancel");
 			} else {
 				console.error("Error: Cannot find cancel button");
 			}
@@ -157,15 +157,15 @@ function connected() {
  * @returns {void}
  */
 function check() {
-	let button = document.querySelector("mwc-button[slot=primaryAction]");
+	let button = document.querySelector("md-text-button[slot=primaryAction]");
 
 	if (button) {
-		const abutton = document.querySelector("mwc-button[slot=secondaryAction]");
+		const abutton = document.querySelector("md-text-button[slot=secondaryAction]");
 
 		if (abutton) {
 			// console.log(button, abutton);
 			console.warn("Warning: Cancel button found. Clicking button:", abutton.innerText, "Not clicking button:", button.innerText);
-			click(abutton, "mwc-button[slot=secondaryAction]", "Cancel");
+			click(abutton, "md-text-button[slot=secondaryAction]", "Cancel");
 		} else {
 			console.warn("Warning: OK button found. Clicking button:", button.innerText);
 			click(button, "ok", "OK");
@@ -176,7 +176,7 @@ function check() {
 
 	if (CAPTCHA) {
 		if (button) {
-			button = button.shadowRoot.querySelector("mwc-button").shadowRoot.getElementById("button");
+			button = button.shadowRoot.querySelector("md-text-button").shadowRoot.getElementById("button");
 			console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
 			button.click();
 		}

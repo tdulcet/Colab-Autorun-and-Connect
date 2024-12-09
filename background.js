@@ -309,7 +309,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 				CAPTCHA: settings.captcha
 			};
 			// console.log(response);
-			return Promise.resolve(response);
+			return response;
 		}
 		case BACKGROUND:
 			sendSettings(message.optionValue);
