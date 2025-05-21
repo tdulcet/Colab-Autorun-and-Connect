@@ -26,22 +26,22 @@ const stopwatch = document.getElementById("stopwatch");
  */
 function outputduration(sec) {
 	// console.log(sec);
-	const d = Math.floor(sec / 86400);
-	const h = Math.floor(sec % 86400 / 3600);
-	const m = Math.floor(sec % 3600 / 60);
-	const s = sec % 60;
+	const days = Math.floor(sec / 86400);
+	const hours = Math.floor(sec % 86400 / 3600);
+	const minutes = Math.floor(sec % 3600 / 60);
+	const seconds = sec % 60;
 	let text = "";
-	if (d > 0) {
-		text += `${numberFormat1.format(d)} `;
+	if (days > 0) {
+		text += `${numberFormat1.format(days)} `;
 	}
-	if (d > 0 || h > 0) {
-		text += `${numberFormat2.format(h)} `;
+	if (days > 0 || hours > 0) {
+		text += `${numberFormat2.format(hours)} `;
 	}
-	if (d > 0 || h > 0 || m > 0) {
-		text += `${numberFormat3.format(m)} `;
+	if (days > 0 || hours > 0 || minutes > 0) {
+		text += `${numberFormat3.format(minutes)} `;
 	}
-	if (d > 0 || h > 0 || m > 0 || s > 0) {
-		text += numberFormat4.format(s);
+	if (days > 0 || hours > 0 || minutes > 0 || seconds > 0) {
+		text += numberFormat4.format(seconds);
 	}
 	return text;
 }

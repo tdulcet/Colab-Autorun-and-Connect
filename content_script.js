@@ -176,7 +176,7 @@ function check() {
 
 	if (CAPTCHA) {
 		if (button) {
-			button = button.shadowRoot.querySelector("md-text-button").shadowRoot.getElementById("button");
+			button = button.shadowRoot.querySelector("mwc-button").shadowRoot.getElementById("button");
 			console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
 			button.click();
 		}
