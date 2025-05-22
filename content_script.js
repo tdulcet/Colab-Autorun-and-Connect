@@ -52,7 +52,7 @@ function send() {
 	};
 	// console.log(response);
 
-	browser.runtime.sendMessage(response);
+	chrome.runtime.sendMessage(response);
 }
 
 /**
@@ -72,7 +72,7 @@ function notification(title, message, date) {
 	};
 	// console.log(response);
 
-	browser.runtime.sendMessage(response);
+	chrome.runtime.sendMessage(response);
 }
 
 /**
@@ -333,9 +333,15 @@ function start() {
 function handleError(error) {
 	console.error(`Error: ${error}`);
 }
+// In your content script
+// TODO -- here working
+chrome.runtime.sendMessage({ type: CONTENT }).then((message) => {
+    console.log(message);
+    if (message && message.type === CONTENT) { // Check if 'message' is defined
+        console.log("Content script received response:", message);
 
-browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
-	if (message.type === CONTENT) {
+//chrome.runtime.sendMessage({ type: CONTENT }).then((message) => {
+	//if (message.type === CONTENT) {
 		({
 			RUN,
 			seconds,
@@ -349,7 +355,7 @@ browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
 	}
 }, handleError);
 
-browser.runtime.onMessage.addListener((message, _sender) => {
+chrome.runtime.onMessage.addListener((message, _sender) => {
 	switch (message.type) {
 		case CONTENT:
 			({

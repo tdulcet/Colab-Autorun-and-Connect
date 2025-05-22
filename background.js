@@ -42,9 +42,9 @@ let iterator = null;
 function notification(title, message) {
 	console.log(title, message);
 	if (settings.send) {
-		browser.notifications.create({
+		chrome.notifications.create({
 			type: "basic",
-			iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+			iconUrl: chrome.runtime.getURL("icons/icon_128.png"),
 			title,
 			message
 		});
@@ -61,23 +61,23 @@ function onError(error) {
 	console.error(`Error: ${error}`);
 }
 
-browser.notifications.onClicked.addListener((notificationId) => {
+chrome.notifications.onClicked.addListener((notificationId) => {
 	const { tabId, url } = notifications.get(notificationId);
 
 	if (tabId) {
-		browser.tabs.query({}).then((tabs) => {
+		chrome.tabs.query({}).then((tabs) => {
 			const atab = tabs.find((tab) => tab.id === tabId);
 			if (atab) {
-				browser.windows.update(atab.windowId, { focused: true }); // focus window
-				browser.tabs.update(atab.id, { active: true }); // focus tab
+				chrome.windows.update(atab.windowId, { focused: true }); // focus window
+				chrome.tabs.update(atab.id, { active: true }); // focus tab
 			}
 		}).catch(onError);
 	} else if (url) {
-		browser.tabs.create({ url });
+		chrome.tabs.create({ url });
 	}
 });
 
-browser.notifications.onClosed.addListener((notificationId) => {
+chrome.notifications.onClosed.addListener((notificationId) => {
 	notifications.delete(notificationId);
 });
 
@@ -99,33 +99,33 @@ async function rotate() {
 	const tab = result.value;
 	// console.log(new Date(), "switching to", tab.id, tab);
 
-	if (browser.tabs.warmup) {
-		browser.tabs.warmup(tab.id);
+	if (chrome.tabs.warmup) {
+		chrome.tabs.warmup(tab.id);
 	}
 
 	if (!previousWindow || previousWindow.id !== tab.windowId) {
 		if (previousWindow) {
 			// console.log(new Date(), "restoring previous", previousTab.id, previousTab);
-			await browser.windows.update(previousWindow.id, { focused: previousWindow.focused, state: previousWindow.state }); // focus window
-			await browser.tabs.update(previousTab.id, { active: previousTab.active }); // focus tab
+			await chrome.windows.update(previousWindow.id, { focused: previousWindow.focused, state: previousWindow.state }); // focus window
+			await chrome.tabs.update(previousTab.id, { active: previousTab.active }); // focus tab
 		}
 
-		browser.windows.get(tab.windowId).then((windowInfo) => {
+		chrome.windows.get(tab.windowId).then((windowInfo) => {
 			previousWindow = windowInfo;
 			// console.log(windowInfo);
 		});
 
-		browser.tabs.query({ active: true, windowId: tab.windowId }).then((tabs) => {
+		chrome.tabs.query({ active: true, windowId: tab.windowId }).then((tabs) => {
 			if (tabs[0]) {
 				[previousTab] = tabs;
 				// console.log(tabs);
 			}
 		});
 
-		await browser.windows.update(tab.windowId, { focused: true }); // focus window
+		await chrome.windows.update(tab.windowId, { focused: true }); // focus window
 	}
 
-	await browser.tabs.update(tab.id, { active: true }); // focus tab
+	await chrome.tabs.update(tab.id, { active: true }); // focus tab
 }
 
 /**
@@ -140,10 +140,10 @@ function newState(state) {
 		console.log(new Date(), state);
 		if (state === "locked" || state === "idle") {
 			if (!atab && tabs.size) {
-				browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+				chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 					if (tabs[0]) {
 						const [tab] = tabs;
-						browser.windows.get(tab.windowId).then((windowInfo) => {
+						chrome.windows.get(tab.windowId).then((windowInfo) => {
 							if (windowInfo.state !== "fullscreen") {
 								atab = tab;
 								awindow = windowInfo;
@@ -151,7 +151,7 @@ function newState(state) {
 
 								rotate();
 
-								browser.alarms.create(ALARM, {
+								chrome.alarms.create(ALARM, {
 									periodInMinutes: settings.period
 								});
 							}
@@ -161,24 +161,24 @@ function newState(state) {
 			}
 		} else if (state === "active") {
 			if (atab) {
-				browser.alarms.clear(ALARM);
+				chrome.alarms.clear(ALARM);
 
 				iterator = null;
 
-				if (browser.tabs.warmup) {
-					browser.tabs.warmup(atab.id);
+				if (chrome.tabs.warmup) {
+					chrome.tabs.warmup(atab.id);
 				}
 
 				if (previousWindow) {
 					// console.log(new Date(), "restoring previous", previousTab.id, previousTab);
-					browser.windows.update(previousWindow.id, { focused: previousWindow.focused, state: previousWindow.state }); // focus window
-					browser.tabs.update(previousTab.id, { active: previousTab.active }); // focus tab
+					chrome.windows.update(previousWindow.id, { focused: previousWindow.focused, state: previousWindow.state }); // focus window
+					chrome.tabs.update(previousTab.id, { active: previousTab.active }); // focus tab
 				}
 
 				if (!previousWindow || previousWindow.id !== atab.windowId) {
 					// console.log(new Date(), "restoring active", atab.id, atab);
-					browser.windows.update(atab.windowId, { focused: awindow.focused, state: awindow.state }); // focus window
-					browser.tabs.update(atab.id, { active: atab.active }); // focus tab
+					chrome.windows.update(atab.windowId, { focused: awindow.focused, state: awindow.state }); // focus window
+					chrome.tabs.update(atab.id, { active: atab.active }); // focus tab
 				}
 
 				previousTab = null;
@@ -191,9 +191,9 @@ function newState(state) {
 	}
 }
 
-browser.idle.onStateChanged.addListener(newState);
+chrome.idle.onStateChanged.addListener(newState);
 
-browser.tabs.onRemoved.addListener((tabId) => {
+chrome.tabs.onRemoved.addListener((tabId) => {
 	tabs.delete(tabId);
 });
 
@@ -209,7 +209,7 @@ function handleAlarm(alarmInfo) {
 	}
 }
 
-browser.alarms.onAlarm.addListener(handleAlarm);
+chrome.alarms.onAlarm.addListener(handleAlarm);
 
 /**
  * Set settings.
@@ -228,7 +228,7 @@ function setSettings(asettings) {
 	settings.period = asettings.period;
 	settings.send = asettings.send;
 
-	browser.idle.setDetectionInterval(settings.idle);
+	chrome.idle.setDetectionInterval(settings.idle);
 }
 
 /**
@@ -241,7 +241,7 @@ function sendSettings(asettings) {
 	setSettings(asettings);
 
 	for (const tab of tabs.values()) {
-		browser.tabs.sendMessage(
+		chrome.tabs.sendMessage(
 			tab.id,
 			{
 				type: CONTENT,
@@ -266,36 +266,130 @@ async function init() {
 	setSettings(asettings);
 }
 
-const promise = init();
+// Initialize 'promise' globally or ensure it's accessible
+const promise = init().catch(err => { // Make sure to catch init errors
+    console.error("Initialization promise (global) rejected:", err);
+    // Decide how to handle this - maybe set a flag that extension is not ready
+    // For now, just logging is important.
+});
 
-browser.runtime.onMessage.addListener(async (message, sender) => {
+// Issue from Firefox was that this was Async and it didn't like it... I don't know enough to know why
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log("BG: onMessage triggered. Message:", message);
+
+    // Immediately handle the fact that sendResponse will be async due to initPromise
+    // This structure assumes *all* message types might depend on initPromise.
+    // If only some do, you can be more granular with 'return true'.
+
+    promise.then(() => {
+        // 'promise' (now initPromise) has resolved successfully
+        console.log("BG: initPromise resolved. Processing message type:", message.type);
+
+        if (!message || typeof message.type === 'undefined') {
+            console.warn("BG: Message received without type or undefined message object:", message);
+            // sendResponse({ error: "Invalid message format" }); // Optional: send error
+            return; // Don't return true, as we are not sending a response for this specific path
+        }
+
+        switch (message.type) {
+            case NOTIFICATION:
+                console.log(message.title, message.message, new Date(message.eventTime));
+                if (settings.send) {
+                    chrome.notifications.create({
+                        type: "basic",
+                        iconUrl: chrome.runtime.getURL("icons/icon_128.png"),
+                        title: message.title,
+                        message: message.message,
+                        eventTime: message.eventTime
+                    }).then((notificationId) => {
+                        const tabId = sender.tab.id;
+                        notifications.set(notificationId, { tabId });
+                        if (chrome.tabs.warmup) {
+                            chrome.tabs.warmup(tabId);
+                        }
+                    });
+                }
+                chrome.action.setTitle({
+                    title: `${TITLE}  \n${message.title}`,
+                    tabId: sender.tab.id
+                });
+                break;
+
+            case CONTENT: {
+                console.log("BG (CONTENT case): Entered after initPromise.");
+                chrome.action.enable(sender.tab.id);
+                // tabs.set(sender.tab.id, sender.tab); // Assuming 'tabs' and 'settings' are available
+                // iterator = null;
+                        
+                // TODO -- the RUN is hardcoded since settings are not working in Chromium (i.e., I think not showing for user to set them)... check Firefox to see what it should look like.
+                const responsePayload = {
+                    type: CONTENT, // CONTENT from common.js
+                    RUN: true,//settings.run, // 'settings' should be loaded by init() and accessible here
+                    seconds: settings.minutes * 60,
+                    wait: settings.wait,
+                    delay: settings.delay,
+                    CAPTCHA: settings.captcha
+                };
+                console.log("BG (CONTENT case): Prepared response:", responsePayload); // This is your line 311
+                sendResponse(responsePayload);
+                console.log("BG (CONTENT case): Called sendResponse.");
+                break; 
+            }
+
+            case BACKGROUND:
+                // sendSettings(message.optionValue); // Does this send a response? If so, call sendResponse()
+                console.log("BG: BACKGROUND case processed.");
+                break;
+
+            default:
+                console.log("BG: Unknown message type received:", message.type);
+                // sendResponse({ error: "Unknown message type" }); // Optional
+                break;
+        }
+    }).catch(error => {
+        console.error("BG: Error after initPromise (in .then block processing message):", error);
+        // It's tricky to call sendResponse here reliably if the error source is unknown
+        // or if sendResponse might have already been called for a different path.
+        // sendResponse({ error: "Background processing error", details: error.message });
+    });
+
+    // **CRUCIAL FOR ASYNCHRONOUS sendResponse IN A NON-ASYNC LISTENER**
+    // This tells Chrome to keep the message channel open because we will call
+    // sendResponse later (inside the initPromise.then() callback).
+    return true;
+});
+
+
+//const promise = init();
+
+/*chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 	// console.log(message);
 	await promise;
 	switch (message.type) {
 		case NOTIFICATION:
 			console.log(message.title, message.message, new Date(message.eventTime));
 			if (settings.send) {
-				browser.notifications.create({
+				chrome.notifications.create({
 					type: "basic",
-					iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+					iconUrl: chrome.runtime.getURL("icons/icon_128.png"),
 					title: message.title,
 					message: message.message,
 					eventTime: message.eventTime
 				}).then((notificationId) => {
 					const tabId = sender.tab.id;
 					notifications.set(notificationId, { tabId });
-					if (browser.tabs.warmup) {
-						browser.tabs.warmup(tabId);
+					if (chrome.tabs.warmup) {
+						chrome.tabs.warmup(tabId);
 					}
 				});
 			}
-			browser.pageAction.setTitle({
+			chrome.action.setTitle({
 				title: `${TITLE}  \n${message.title}`,
 				tabId: sender.tab.id
 			});
 			break;
 		case CONTENT: {
-			browser.pageAction.show(sender.tab.id);
+			chrome.action.enable(sender.tab.id);
 
 			tabs.set(sender.tab.id, sender.tab);
 			iterator = null;
@@ -308,33 +402,35 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 				delay: settings.delay,
 				CAPTCHA: settings.captcha
 			};
-			// console.log(response);
-			return response;
+			console.log(response);
+            sendResponse(response);
+            break;
+			//return response;
 		}
 		case BACKGROUND:
 			sendSettings(message.optionValue);
 			break;
 		// No default
 	}
-});
+});*/
 
-browser.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener((details) => {
 	console.log(details);
 
-	const manifest = browser.runtime.getManifest();
+	const manifest = chrome.runtime.getManifest();
 	switch (details.reason) {
 		case "install":
 			notification(`🎉 ${manifest.name} installed`, `Thank you for installing the “${TITLE}” add-on!\nVersion: ${manifest.version}\n\nOpen the options/preferences page to configure this extension.`);
 			break;
 		case "update":
 			if (settings.send) {
-				browser.notifications.create({
+				chrome.notifications.create({
 					type: "basic",
-					iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+					iconUrl: chrome.runtime.getURL("icons/icon_128.png"),
 					title: `✨ ${manifest.name} updated`,
 					message: `The “${TITLE}” add-on has been updated to version ${manifest.version}. Click to see the release notes.`
 				}).then((notificationId) => {
-					if (browser.runtime.getBrowserInfo) {
+					if (chrome.runtime.getBrowserInfo) {
 						const url = `https://addons.mozilla.org/firefox/addon/colab-autorun-and-connect/versions/${manifest.version}`;
 						notifications.set(notificationId, { url });
 					}
