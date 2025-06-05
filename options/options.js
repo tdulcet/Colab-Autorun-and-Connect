@@ -9,6 +9,25 @@ import * as AutomaticSettings from "/common/modules/AutomaticSettings/AutomaticS
 
 import * as CustomOptionTriggers from "./modules/CustomOptionTriggers.js";
 
+
+// Chrome
+// Adapted from: https://github.com/mozilla/webextension-polyfill/blob/master/src/chrome-polyfill.js
+const IS_CHROME = Object.getPrototypeOf(chrome) !== Object.prototype;
+
+document.getElementById("shortcut").addEventListener("click", (event) => {
+	event.target.disabled = true;
+
+	if (chrome.commands.openShortcutSettings) {
+		chrome.commands.openShortcutSettings().finally(() => {
+			event.target.disabled = false;
+		});
+	} else if (IS_CHROME) {
+		chrome.tabs.create({ url: "chrome://extensions/shortcuts" }).finally(() => {
+			event.target.disabled = false;
+		});
+	}
+});
+
 // init modules
 CustomOptionTriggers.registerTrigger();
 AutomaticSettings.setDefaultOptionProvider(AddonSettings.getDefaultValue);

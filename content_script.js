@@ -176,7 +176,7 @@ function check() {
 
 	if (CAPTCHA) {
 		if (button) {
-			button = button.shadowRoot.querySelector("md-text-button").shadowRoot.getElementById("button");
+			button = button.shadowRoot.querySelector("mwc-button").shadowRoot.getElementById("button");
 			console.warn("Warning: Cancel button found. Clicking button:", button.innerText);
 			button.click();
 		}
@@ -236,7 +236,7 @@ function connect() {
 	if (button) {
 		const abutton = button.shadowRoot.getElementById("connect");
 		if (abutton.innerText.toLowerCase().includes("connect")) {
-			// console.log(button);
+			console.log(button);
 			console.time(label);
 			console.log("Connecting");
 			console.debug("Clicking button:", abutton.innerText);
@@ -333,15 +333,10 @@ function start() {
 function handleError(error) {
 	console.error(`Error: ${error}`);
 }
-// In your content script
-// TODO -- here working
 chrome.runtime.sendMessage({ type: CONTENT }).then((message) => {
     console.log(message);
     if (message && message.type === CONTENT) { // Check if 'message' is defined
         console.log("Content script received response:", message);
-
-//chrome.runtime.sendMessage({ type: CONTENT }).then((message) => {
-	//if (message.type === CONTENT) {
 		({
 			RUN,
 			seconds,

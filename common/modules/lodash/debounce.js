@@ -4,7 +4,7 @@ import root from './.internal/root.js'
 /**
  * Creates a debounced function that delays invoking `func` until after `wait`
  * milliseconds have elapsed since the last time the debounced function was
- * invoked, or until the next browser frame is drawn. The debounced function
+ * invoked, or until the next chrome frame is drawn. The debounced function
  * comes with a `cancel` method to cancel delayed `func` invocations and a
  * `flush` method to immediately invoke them. Provide `options` to indicate
  * whether `func` should be invoked on the leading and/or trailing edge of the

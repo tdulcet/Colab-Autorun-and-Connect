@@ -269,8 +269,6 @@ async function init() {
 // Initialize 'promise' globally or ensure it's accessible
 const promise = init().catch(err => { // Make sure to catch init errors
     console.error("Initialization promise (global) rejected:", err);
-    // Decide how to handle this - maybe set a flag that extension is not ready
-    // For now, just logging is important.
 });
 
 // Issue from Firefox was that this was Async and it didn't like it... I don't know enough to know why
@@ -318,27 +316,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             case CONTENT: {
                 console.log("BG (CONTENT case): Entered after initPromise.");
                 chrome.action.enable(sender.tab.id);
-                // tabs.set(sender.tab.id, sender.tab); // Assuming 'tabs' and 'settings' are available
-                // iterator = null;
+                tabs.set(sender.tab.id, sender.tab);
+                iterator = null;
                         
-                // TODO -- the RUN is hardcoded since settings are not working in Chromium (i.e., I think not showing for user to set them)... check Firefox to see what it should look like.
                 const responsePayload = {
-                    type: CONTENT, // CONTENT from common.js
-                    RUN: true,//settings.run, // 'settings' should be loaded by init() and accessible here
+                    type: CONTENT,
+                    RUN: settings.run, // 'settings' should be loaded by init() and accessible here
                     seconds: settings.minutes * 60,
                     wait: settings.wait,
                     delay: settings.delay,
                     CAPTCHA: settings.captcha
                 };
-                console.log("BG (CONTENT case): Prepared response:", responsePayload); // This is your line 311
                 sendResponse(responsePayload);
-                console.log("BG (CONTENT case): Called sendResponse.");
                 break; 
             }
 
             case BACKGROUND:
                 // sendSettings(message.optionValue); // Does this send a response? If so, call sendResponse()
-                console.log("BG: BACKGROUND case processed.");
                 break;
 
             default:
@@ -358,61 +352,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // sendResponse later (inside the initPromise.then() callback).
     return true;
 });
-
-
-//const promise = init();
-
-/*chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-	// console.log(message);
-	await promise;
-	switch (message.type) {
-		case NOTIFICATION:
-			console.log(message.title, message.message, new Date(message.eventTime));
-			if (settings.send) {
-				chrome.notifications.create({
-					type: "basic",
-					iconUrl: chrome.runtime.getURL("icons/icon_128.png"),
-					title: message.title,
-					message: message.message,
-					eventTime: message.eventTime
-				}).then((notificationId) => {
-					const tabId = sender.tab.id;
-					notifications.set(notificationId, { tabId });
-					if (chrome.tabs.warmup) {
-						chrome.tabs.warmup(tabId);
-					}
-				});
-			}
-			chrome.action.setTitle({
-				title: `${TITLE}  \n${message.title}`,
-				tabId: sender.tab.id
-			});
-			break;
-		case CONTENT: {
-			chrome.action.enable(sender.tab.id);
-
-			tabs.set(sender.tab.id, sender.tab);
-			iterator = null;
-
-			const response = {
-				type: CONTENT,
-				RUN: settings.run,
-				seconds: settings.minutes * 60,
-				wait: settings.wait,
-				delay: settings.delay,
-				CAPTCHA: settings.captcha
-			};
-			console.log(response);
-            sendResponse(response);
-            break;
-			//return response;
-		}
-		case BACKGROUND:
-			sendSettings(message.optionValue);
-			break;
-		// No default
-	}
-});*/
 
 chrome.runtime.onInstalled.addListener((details) => {
 	console.log(details);

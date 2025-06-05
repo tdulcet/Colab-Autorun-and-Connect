@@ -30,7 +30,6 @@
     {
       "matches": ["https://colab.research.google.com/*"],
       "js": ["content_script.js"]
-      // note: content scripts don’t support ES modules; remove import statements or bundle via a build step
     }
   ],
 

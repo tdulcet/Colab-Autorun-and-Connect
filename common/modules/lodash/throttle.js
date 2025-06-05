@@ -3,7 +3,7 @@ import isObject from './isObject.js'
 
 /**
  * Creates a throttled function that only invokes `func` at most once per
- * every `wait` milliseconds (or once per browser frame). The throttled function
+ * every `wait` milliseconds (or once per chrome frame). The throttled function
  * comes with a `cancel` method to cancel delayed `func` invocations and a
  * `flush` method to immediately invoke them. Provide `options` to indicate
  * whether `func` should be invoked on the leading and/or trailing edge of the

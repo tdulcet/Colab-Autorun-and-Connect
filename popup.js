@@ -26,22 +26,22 @@ const stopwatch = document.getElementById("stopwatch");
  */
 function outputduration(sec) {
 	// console.log(sec);
-	const d = Math.floor(sec / 86400);
-	const h = Math.floor(sec % 86400 / 3600);
-	const m = Math.floor(sec % 3600 / 60);
-	const s = sec % 60;
+	const days = Math.floor(sec / 86400);
+	const hours = Math.floor(sec % 86400 / 3600);
+	const minutes = Math.floor(sec % 3600 / 60);
+	const seconds = sec % 60;
 	let text = "";
-	if (d > 0) {
-		text += `${numberFormat1.format(d)} `;
+	if (days > 0) {
+		text += `${numberFormat1.format(days)} `;
 	}
-	if (d > 0 || h > 0) {
-		text += `${numberFormat2.format(h)} `;
+	if (days > 0 || hours > 0) {
+		text += `${numberFormat2.format(hours)} `;
 	}
-	if (d > 0 || h > 0 || m > 0) {
-		text += `${numberFormat3.format(m)} `;
+	if (days > 0 || hours > 0 || minutes > 0) {
+		text += `${numberFormat3.format(minutes)} `;
 	}
-	if (d > 0 || h > 0 || m > 0 || s > 0) {
-		text += numberFormat4.format(s);
+	if (days > 0 || hours > 0 || minutes > 0 || seconds > 0) {
+		text += numberFormat4.format(seconds);
 	}
 	return text;
 }
@@ -125,13 +125,13 @@ function updatePopup(time) {
 function getstatus() {
 	document.getElementById("status").textContent = "Loading…";
 
-	browser.tabs.sendMessage(tabId, { type: POPUP }).catch(handleError);
+	chrome.tabs.sendMessage(tabId, { type: POPUP }).catch(handleError);
 }
 
 document.getElementById("settings").addEventListener("click", (event) => {
 	event.target.disabled = true;
 
-	browser.runtime.openOptionsPage().finally(() => {
+	chrome.runtime.openOptionsPage().finally(() => {
 		event.target.disabled = false;
 	});
 });
@@ -143,13 +143,13 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 		if (enabled) {
 			event.target.disabled = true;
 
-			browser.tabs.sendMessage(tabId, { type: START }).catch(handleError);
+			chrome.tabs.sendMessage(tabId, { type: START }).catch(handleError);
 
 			document.getElementById("status").textContent = "Waiting…";
 
 			document.getElementById("table").classList.remove("hidden");
 		} else {
-			browser.tabs.sendMessage(tabId, { type: STOP }).catch(handleError);
+			chrome.tabs.sendMessage(tabId, { type: STOP }).catch(handleError);
 
 			document.getElementById("table").classList.add("hidden");
 			document.getElementById("time").classList.add("hidden");
@@ -157,7 +157,7 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 	}
 });
 
-browser.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender) => {
 	if (sender.tab.id === tabId) {
 		if (message.type === POPUP) {
 			({
@@ -176,7 +176,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 	}
 });
 
-browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
 	if (tabs[0]) {
 		tabId = tabs[0].id;
 

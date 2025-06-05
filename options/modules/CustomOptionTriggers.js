@@ -20,7 +20,7 @@ const BACKGROUND = "background";
  */
 function apply(optionValue) {
 	// trigger update for current session
-	browser.runtime.sendMessage({
+	chrome.runtime.sendMessage({
 		type: BACKGROUND,
 		optionValue
 	});
