@@ -1,6 +1,7 @@
 @import "/common/modules/AutomaticSettings/css/photonOptions.css";
 
-body {
+html {
+	font: caption;
 	width: max-content;
 }
 

@@ -1,15 +1,13 @@
 {
   "manifest_version": 2,
   "name": "Colab Autorun and Connect",
-  "version": "1.3.1",
+  "version": "1.3.3",
   "author": "Teal Dulcet and Daniel Connelly",
 
   "description": "Automatically connect, reconnect and optionally run the first cell of notebooks in Google Colab.",
   "homepage_url": "https://github.com/tdulcet/Colab-Autorun-and-Connect",
 
   "page_action": {
-    "browser_style": true,
-    "chrome_style": true,
     "default_icon": {
       "32": "icons/icon_32.png",
       "64": "icons/icon_64.png",
@@ -19,9 +17,7 @@
     "default_popup": "popup.html"
   },
   "options_ui": {
-    "page": "options/options.html",
-    "browser_style": true,
-    "chrome_style": true
+    "page": "options/options.html"
   },
   "background": {
     "page": "background.html"
