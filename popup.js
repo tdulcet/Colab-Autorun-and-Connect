@@ -2,10 +2,7 @@
 
 import { POPUP, START, STOP, outputdate } from "/common.js";
 
-const numberFormat1 = new Intl.NumberFormat([], { style: "unit", unit: "day", unitDisplay: "long" });
-const numberFormat2 = new Intl.NumberFormat([], { style: "unit", unit: "hour", unitDisplay: "long" });
-const numberFormat3 = new Intl.NumberFormat([], { style: "unit", unit: "minute", unitDisplay: "long" });
-const numberFormat4 = new Intl.NumberFormat([], { style: "unit", unit: "second", unitDisplay: "long" });
+const durationFormat = new Intl.DurationFormat([], { style: "long" });
 
 // Automatically run the first cell
 let RUN = true;
@@ -30,20 +27,7 @@ function outputduration(sec) {
 	const hours = Math.floor(sec % 86400 / 3600);
 	const minutes = Math.floor(sec % 3600 / 60);
 	const seconds = sec % 60;
-	let text = "";
-	if (days > 0) {
-		text += `${numberFormat1.format(days)} `;
-	}
-	if (days > 0 || hours > 0) {
-		text += `${numberFormat2.format(hours)} `;
-	}
-	if (days > 0 || hours > 0 || minutes > 0) {
-		text += `${numberFormat3.format(minutes)} `;
-	}
-	if (days > 0 || hours > 0 || minutes > 0 || seconds > 0) {
-		text += numberFormat4.format(seconds);
-	}
-	return text;
+	return durationFormat.format({ days, hours, minutes, seconds });
 }
 
 /**
@@ -55,7 +39,7 @@ function outputduration(sec) {
  */
 function outputstopwatch(time, now) {
 	const sec = Math.floor((now - time) / 1000);
-	stopwatch.textContent = sec > 0 ? (running ? sec >= 3600 * 24 ? "‼️\u00A0" : sec >= 3600 * 12 ? "❗\u00A0" : "" : "") + outputduration(sec) : "";
+	stopwatch.textContent = sec > 0 ? (running ? sec >= 3600 * 24 ? "‼️\u{A0}" : sec >= 3600 * 12 ? "❗\u{A0}" : "" : "") + outputduration(sec) : "";
 }
 
 /**
@@ -74,16 +58,6 @@ function timerTick(time) {
 			timerTick(time);
 		}
 	}, delay);
-}
-
-/**
- * Handle error.
- *
- * @param {string} error
- * @returns {void}
- */
-function handleError(error) {
-	console.error(`Error: ${error}`);
 }
 
 /**
@@ -125,7 +99,9 @@ function updatePopup(time) {
 function getstatus() {
 	document.getElementById("status").textContent = "Loading…";
 
-	browser.tabs.sendMessage(tabId, { type: POPUP }).catch(handleError);
+	browser.tabs.sendMessage(tabId, { type: POPUP }).catch((error) => {
+		console.error(`Error: ${error}`);
+	});
 }
 
 document.getElementById("settings").addEventListener("click", (event) => {
@@ -143,13 +119,17 @@ document.getElementById("enabled").addEventListener("change", (event) => {
 		if (enabled) {
 			event.target.disabled = true;
 
-			browser.tabs.sendMessage(tabId, { type: START }).catch(handleError);
+			browser.tabs.sendMessage(tabId, { type: START }).catch((error) => {
+				console.error(`Error: ${error}`);
+			});
 
 			document.getElementById("status").textContent = "Waiting…";
 
 			document.getElementById("table").classList.remove("hidden");
 		} else {
-			browser.tabs.sendMessage(tabId, { type: STOP }).catch(handleError);
+			browser.tabs.sendMessage(tabId, { type: STOP }).catch((error) => {
+				console.error(`Error: ${error}`);
+			});
 
 			document.getElementById("table").classList.add("hidden");
 			document.getElementById("time").classList.add("hidden");
@@ -177,14 +157,16 @@ browser.runtime.onMessage.addListener((message, sender) => {
 });
 
 browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-	if (tabs[0]) {
-		tabId = tabs[0].id;
+	if (!tabs[0]) {
+		return;
+	}
 
-		if (tabId) {
-			document.querySelector(".no-data").classList.add("hidden");
-			document.querySelector(".data").classList.remove("hidden");
+	tabId = tabs[0].id;
 
-			getstatus();
-		}
+	if (tabId) {
+		document.querySelector(".no-data").classList.add("hidden");
+		document.querySelector(".data").classList.remove("hidden");
+
+		getstatus();
 	}
 });

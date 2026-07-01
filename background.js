@@ -32,35 +32,6 @@ const tabs = new Map();
 
 let iterator = null;
 
-/**
- * Create notification.
- *
- * @param {string} title
- * @param {string} message
- * @returns {void}
- */
-function notification(title, message) {
-	console.log(title, message);
-	if (settings.send) {
-		browser.notifications.create({
-			type: "basic",
-			iconUrl: browser.runtime.getURL("icons/icon_128.png"),
-			title,
-			message
-		});
-	}
-}
-
-/**
- * On error.
- *
- * @param {string} error
- * @returns {void}
- */
-function onError(error) {
-	console.error(`Error: ${error}`);
-}
-
 browser.notifications.onClicked.addListener((notificationId) => {
 	const { tabId, url } = notifications.get(notificationId);
 
@@ -71,7 +42,11 @@ browser.notifications.onClicked.addListener((notificationId) => {
 				browser.windows.update(atab.windowId, { focused: true }); // focus window
 				browser.tabs.update(atab.id, { active: true }); // focus tab
 			}
-		}).catch(onError);
+		}).catch((error) => {
+			console.error(`Error: ${error}`);
+		});
+	} else if (url == null) {
+		browser.runtime.openOptionsPage();
 	} else if (url) {
 		browser.tabs.create({ url });
 	}
@@ -136,57 +111,65 @@ async function rotate() {
  */
 function newState(state) {
 	// console.log(`New state: ${state}`);
-	if (settings.rotate) {
-		console.log(new Date(), state);
-		if (state === "locked" || state === "idle") {
-			if (!atab && tabs.size) {
-				browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-					if (tabs[0]) {
-						const [tab] = tabs;
-						browser.windows.get(tab.windowId).then((windowInfo) => {
-							if (windowInfo.state !== "fullscreen") {
-								atab = tab;
-								awindow = windowInfo;
-								// console.log(tabs, windowInfo);
+	if (!settings.rotate) {
+		return;
+	}
 
-								rotate();
+	console.log(new Date(), state);
+	if (state === "locked" || state === "idle") {
+		if (!atab && tabs.size) {
+			browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+				if (!tabs[0]) {
+					return;
+				}
 
-								browser.alarms.create(ALARM, {
-									periodInMinutes: settings.period
-								});
-							}
-						});
+				const [tab] = tabs;
+				browser.windows.get(tab.windowId).then((windowInfo) => {
+					if (windowInfo.state === "fullscreen") {
+						return;
 					}
+
+					atab = tab;
+					awindow = windowInfo;
+					// console.log(tabs, windowInfo);
+
+					rotate();
+
+					browser.alarms.create(ALARM, {
+						periodInMinutes: settings.period
+					});
+
 				});
+
+			});
+		}
+	} else if (state === "active") {
+		if (atab) {
+			browser.alarms.clear(ALARM);
+
+			iterator = null;
+
+			if (browser.tabs.warmup) {
+				browser.tabs.warmup(atab.id);
 			}
-		} else if (state === "active") {
-			if (atab) {
-				browser.alarms.clear(ALARM);
 
-				iterator = null;
-
-				if (browser.tabs.warmup) {
-					browser.tabs.warmup(atab.id);
-				}
-
-				if (previousWindow) {
-					// console.log(new Date(), "restoring previous", previousTab.id, previousTab);
-					browser.windows.update(previousWindow.id, { focused: previousWindow.focused, state: previousWindow.state }); // focus window
-					browser.tabs.update(previousTab.id, { active: previousTab.active }); // focus tab
-				}
-
-				if (!previousWindow || previousWindow.id !== atab.windowId) {
-					// console.log(new Date(), "restoring active", atab.id, atab);
-					browser.windows.update(atab.windowId, { focused: awindow.focused, state: awindow.state }); // focus window
-					browser.tabs.update(atab.id, { active: atab.active }); // focus tab
-				}
-
-				previousTab = null;
-				previousWindow = null;
-
-				atab = null;
-				awindow = null;
+			if (previousWindow) {
+				// console.log(new Date(), "restoring previous", previousTab.id, previousTab);
+				browser.windows.update(previousWindow.id, { focused: previousWindow.focused, state: previousWindow.state }); // focus window
+				browser.tabs.update(previousTab.id, { active: previousTab.active }); // focus tab
 			}
+
+			if (!previousWindow || previousWindow.id !== atab.windowId) {
+				// console.log(new Date(), "restoring active", atab.id, atab);
+				browser.windows.update(atab.windowId, { focused: awindow.focused, state: awindow.state }); // focus window
+				browser.tabs.update(atab.id, { active: atab.active }); // focus tab
+			}
+
+			previousTab = null;
+			previousWindow = null;
+
+			atab = null;
+			awindow = null;
 		}
 	}
 }
@@ -200,7 +183,7 @@ browser.tabs.onRemoved.addListener((tabId) => {
 /**
  * Handle alarm.
  *
- * @param {Object} alarmInfo
+ * @param {object} alarmInfo
  * @returns {void}
  */
 function handleAlarm(alarmInfo) {
@@ -214,7 +197,7 @@ browser.alarms.onAlarm.addListener(handleAlarm);
 /**
  * Set settings.
  *
- * @param {Object} asettings
+ * @param {object} asettings
  * @returns {void}
  */
 function setSettings(asettings) {
@@ -234,7 +217,7 @@ function setSettings(asettings) {
 /**
  * Send settings to content scripts.
  *
- * @param {Object} asettings
+ * @param {object} asettings
  * @returns {void}
  */
 function sendSettings(asettings) {
@@ -251,7 +234,9 @@ function sendSettings(asettings) {
 				delay: settings.delay,
 				CAPTCHA: settings.captcha
 			}
-		).catch(onError);
+		).catch((error) => {
+			console.error(`Error: ${error}`);
+		});
 	}
 }
 
@@ -324,7 +309,16 @@ browser.runtime.onInstalled.addListener((details) => {
 	const manifest = browser.runtime.getManifest();
 	switch (details.reason) {
 		case "install":
-			notification(`🎉 ${manifest.name} installed`, `Thank you for installing the “${TITLE}” add-on!\nVersion: ${manifest.version}\n\nOpen the options/preferences page to configure this extension.`);
+			if (settings.send) {
+				browser.notifications.create({
+					type: "basic",
+					iconUrl: browser.runtime.getURL("icons/icon_128.png"),
+					title: `🎉 ${manifest.name} installed`,
+					message: `Thank you for installing the “${TITLE}” add-on!\nVersion: ${manifest.version}\n\nClick to open the options/preferences page to configure this extension.`
+				}).then((notificationId) => {
+					notifications.set(notificationId, {});
+				});
+			}
 			break;
 		case "update":
 			if (settings.send) {
@@ -334,10 +328,12 @@ browser.runtime.onInstalled.addListener((details) => {
 					title: `✨ ${manifest.name} updated`,
 					message: `The “${TITLE}” add-on has been updated to version ${manifest.version}. Click to see the release notes.`
 				}).then((notificationId) => {
-					if (browser.runtime.getBrowserInfo) {
-						const url = `https://addons.mozilla.org/firefox/addon/colab-autorun-and-connect/versions/${manifest.version}`;
-						notifications.set(notificationId, { url });
+					if (!browser.runtime.getBrowserInfo) {
+						return;
 					}
+
+					const url = `https://addons.mozilla.org/firefox/addon/colab-autorun-and-connect/versions/${manifest.version}`;
+					notifications.set(notificationId, { url });
 				});
 			}
 			break;

@@ -24,6 +24,8 @@ document.getElementById("shortcut").addEventListener("click", (event) => {
 		browser.tabs.create({ url: "chrome://extensions/shortcuts" }).finally(() => {
 			event.target.disabled = false;
 		});
+	} else {
+		alert("Unable to automatically open the Shortcut Settings (requires Firefox 137 or greater).");
 	}
 });
 

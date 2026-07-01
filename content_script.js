@@ -121,7 +121,7 @@ function connected() {
 			// console.log(button, abutton);
 
 			if (abutton) {
-				console.debug("Clicking button:", abutton.innerText, "Not clicking button:", button.innerText);
+				console.debug("Clicking button:", abutton.innerText, ", Not clicking button:", button.innerText);
 				click(abutton, "md-text-button[slot=secondaryAction]", "Cancel");
 			} else {
 				console.error("Error: Cannot find cancel button");
@@ -164,7 +164,7 @@ function check() {
 
 		if (abutton) {
 			// console.log(button, abutton);
-			console.warn("Warning: Cancel button found. Clicking button:", abutton.innerText, "Not clicking button:", button.innerText);
+			console.warn("Warning: Cancel button found. Clicking button:", abutton.innerText, ", Not clicking button:", button.innerText);
 			click(abutton, "md-text-button[slot=secondaryAction]", "Cancel");
 		} else {
 			console.warn("Warning: OK button found. Clicking button:", button.innerText);
@@ -205,7 +205,7 @@ function run() {
 	const button = document.querySelector("colab-run-button");
 
 	if (button) {
-		if (button.shadowRoot.getElementById("stopSymbolMask")) {
+		if (button.shadowRoot.getElementById("stopSymbolMask") || button.shadowRoot.getElementById("dash-rotate")) {
 			console.log(`Notebook already running, will recheck in ${seconds} seconds`);
 			// running = true;
 		} else { // button.shadowRoot.getElementById("playSymbolMask")
@@ -324,30 +324,24 @@ function start() {
 	}
 }
 
-/**
- * Handle error.
- *
- * @param {string} error
- * @returns {void}
- */
-function handleError(error) {
-	console.error(`Error: ${error}`);
-}
-
 browser.runtime.sendMessage({ type: CONTENT }).then((message) => {
-	if (message.type === CONTENT) {
-		({
-			RUN,
-			seconds,
-			wait,
-			delay,
-			CAPTCHA
-		} = message);
-		// console.log(message);
-
-		timeoutID = setTimeout(astart, delay * 1000);
+	if (message.type !== CONTENT) {
+		return;
 	}
-}, handleError);
+
+	({
+		RUN,
+		seconds,
+		wait,
+		delay,
+		CAPTCHA
+	} = message);
+	// console.log(message);
+
+	timeoutID = setTimeout(astart, delay * 1000);
+}, (error) => {
+    console.error(`Error: ${error}`);
+});
 
 browser.runtime.onMessage.addListener((message, _sender) => {
 	switch (message.type) {
